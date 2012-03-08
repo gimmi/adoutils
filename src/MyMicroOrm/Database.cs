@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace MyMicroOrm
 {
-	public class Database // TODO implement IDisposable
+	public class Database : IDisposable
 	{
 		private readonly string _connStr;
 		private SqlConnection _conn;
@@ -158,6 +158,12 @@ namespace MyMicroOrm
 		private static IDictionary<string, object> ToDictionary(object o)
 		{
 			return TypeDescriptor.GetProperties(o).Cast<PropertyDescriptor>().ToDictionary(p => p.Name, p => p.GetValue(o));
+		}
+
+		public void Dispose()
+		{
+			RollbackTransaction();
+			CloseConnection();
 		}
 	}
 }
