@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System.Linq;
 using SharpTestsEx;
 
-namespace MyMicroOrm.Tests
+namespace ADOUtils.Tests
 {
 	public class CachedDataRecordTest
 	{

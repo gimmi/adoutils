@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 
-namespace MyMicroOrm
+namespace ADOUtils
 {
 	public class Database : IDisposable
 	{
@@ -15,6 +16,7 @@ namespace MyMicroOrm
 
 		public Database(string connStr)
 		{
+//			DbProviderFactories.GetFactory();
 			_connStr = connStr;
 		}
 

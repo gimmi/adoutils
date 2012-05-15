@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MyMicroOrm
+namespace ADOUtils
 {
 	public class IdentityMap<T>
 	{

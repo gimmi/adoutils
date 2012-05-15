@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MyMicroOrm
+namespace ADOUtils
 {
 	public class Connection : IDisposable
 	{

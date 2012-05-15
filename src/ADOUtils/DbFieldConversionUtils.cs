@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Data;
 
-namespace MyMicroOrm
+namespace ADOUtils
 {
 	public static class DbFieldConversionUtils
 	{

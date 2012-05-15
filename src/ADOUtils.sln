@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMicroOrm", "MyMicroOrm\MyMicroOrm.csproj", "{5459CB62-0D05-48C4-B9A5-3784150960F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADOUtils", "ADOUtils\ADOUtils.csproj", "{5459CB62-0D05-48C4-B9A5-3784150960F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMicroOrm.Tests", "MyMicroOrm.Tests\MyMicroOrm.Tests.csproj", "{8E4F196D-1CCB-46A7-B4B6-B239FBC26BFB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADOUtils.Tests", "ADOUtils.Tests\ADOUtils.Tests.csproj", "{8E4F196D-1CCB-46A7-B4B6-B239FBC26BFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,6 @@
 ﻿using System.Data.SqlClient;
 
-namespace MyMicroOrm.Tests
+namespace ADOUtils.Tests
 {
 	public class TestUtils
 	{
@@ -9,10 +9,10 @@ namespace MyMicroOrm.Tests
 		public static string CreateTestDbAndConnstr(string script)
 		{
 			SqlConnection.ClearAllPools();
-			Execute("IF DB_ID('MyMicroOrmTests') IS NOT NULL DROP DATABASE MyMicroOrmTests");
-			Execute("CREATE DATABASE MyMicroOrmTests");
-			Execute("USE MyMicroOrmTests\n" + script);
-			return string.Format(ConnStrTemplate, "MyMicroOrmTests");
+			Execute("IF DB_ID('ADOUtilsTests') IS NOT NULL DROP DATABASE ADOUtilsTests");
+			Execute("CREATE DATABASE ADOUtilsTests");
+			Execute("USE ADOUtilsTests\n" + script);
+			return string.Format(ConnStrTemplate, "ADOUtilsTests");
 		}
 
 		private static void Execute(string sql)

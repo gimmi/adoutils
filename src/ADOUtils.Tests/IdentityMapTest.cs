@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using SharpTestsEx;
 
-namespace MyMicroOrm.Tests
+namespace ADOUtils.Tests
 {
 	[TestFixture]
 	public class IdentityMapTest
