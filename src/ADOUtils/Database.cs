@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -32,7 +31,7 @@ namespace ADOUtils
 			return new Connection(CloseConnection);
 		}
 
-		public virtual void CloseConnection()
+		private void CloseConnection()
 		{
 			if (_conn != null)
 			{
@@ -53,7 +52,7 @@ namespace ADOUtils
 			return new Transaction(new Action[] {CommitTransaction, connection.Close}, new Action[] {RollbackTransaction, connection.Close}, new Action[] {RollbackTransaction, connection.Close});
 		}
 
-		public virtual void CommitTransaction()
+		private void CommitTransaction()
 		{
 			if (_tr != null)
 			{
@@ -63,7 +62,7 @@ namespace ADOUtils
 			}
 		}
 
-		public virtual void RollbackTransaction()
+		private void RollbackTransaction()
 		{
 			if (_tr != null)
 			{
