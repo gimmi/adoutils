@@ -32,7 +32,7 @@ namespace ADOUtils
 			return new Connection(CloseConnection);
 		}
 
-		private void CloseConnection()
+		public virtual void CloseConnection()
 		{
 			if (_conn != null)
 			{
@@ -46,13 +46,14 @@ namespace ADOUtils
 		{
 			if (_tr != null)
 			{
-				return new Transaction(rollback: RollbackTransaction);
+				return new Transaction(rollback: new Action[] {RollbackTransaction});
 			}
+			var connection = OpenConnection();
 			_tr = _conn.BeginTransaction();
-			return new Transaction(CommitTransaction, RollbackTransaction, RollbackTransaction);
+			return new Transaction(new Action[] {CommitTransaction, connection.Close}, new Action[] {RollbackTransaction, connection.Close}, new Action[] {RollbackTransaction, connection.Close});
 		}
 
-		private void CommitTransaction()
+		public virtual void CommitTransaction()
 		{
 			if (_tr != null)
 			{
@@ -62,7 +63,7 @@ namespace ADOUtils
 			}
 		}
 
-		private void RollbackTransaction()
+		public virtual void RollbackTransaction()
 		{
 			if (_tr != null)
 			{
