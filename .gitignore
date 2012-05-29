@@ -5,6 +5,9 @@
 /src/*/obj/
 /src/*/*.user
 
+# ReSharper stuff
+src/_ReSharper.*
+
 # Managed by NuGet
 /lib/
 
