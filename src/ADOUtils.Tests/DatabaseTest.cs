@@ -154,6 +154,21 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 			}
 		}
 
+		[Test]
+		public void Should_open_transacion_with_connection()
+		{
+			var tran = _target.BeginTransaction();
+			GetConnField().Should().Not.Be.Null();
+
+			tran.Commit();
+			GetConnField().Should().Be.Null();
+
+			tran = _target.BeginTransaction();
+
+			tran.Rollback();
+			GetConnField().Should().Be.Null();
+		}
+
 		private SqlConnection GetConnField()
 		{
 			return (SqlConnection)_target.GetType().GetField("_conn", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_target);
