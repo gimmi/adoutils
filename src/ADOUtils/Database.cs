@@ -2,30 +2,36 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.Common;
 using System.Linq;
 
 namespace ADOUtils
 {
 	public class Database : IDisposable
 	{
+		private readonly DbProviderFactory _factory;
 		private readonly string _connStr;
 		private IDbConnection _conn;
 		private IDbTransaction _tr;
 
-		public Database(string connStr)
+		public Database(string connStr) : this("System.Data.SqlClient", connStr) {}
+
+		public Database(string providerName, string connStr) : this(DbProviderFactories.GetFactory(providerName), connStr) {}
+
+		public Database(DbProviderFactory factory, string connStr)
 		{
-//			DbProviderFactories.GetFactory();
+			_factory = factory;
 			_connStr = connStr;
 		}
 
 		public virtual Connection OpenConnection()
 		{
-			if (_conn != null)
+			if(_conn != null)
 			{
 				return new Connection();
 			}
-			var conn = new SqlConnection(_connStr);
+			var conn = _factory.CreateConnection();
+			conn.ConnectionString = _connStr;
 			conn.Open();
 			_conn = conn;
 			return new Connection(CloseConnection);
@@ -33,9 +39,9 @@ namespace ADOUtils
 
 		private void CloseConnection()
 		{
-			if (_conn != null)
+			if(_conn != null)
 			{
-				var conn = _conn;
+				IDbConnection conn = _conn;
 				_conn = null;
 				conn.Close();
 			}
@@ -43,20 +49,20 @@ namespace ADOUtils
 
 		public virtual Transaction BeginTransaction()
 		{
-			if (_tr != null)
+			if(_tr != null)
 			{
-				return new Transaction(rollback: new Action[] {RollbackTransaction});
+				return new Transaction(rollback: new Action[] { RollbackTransaction });
 			}
-			var connection = OpenConnection();
+			Connection connection = OpenConnection();
 			_tr = _conn.BeginTransaction();
-			return new Transaction(new Action[] {CommitTransaction, connection.Close}, new Action[] {RollbackTransaction, connection.Close}, new Action[] {RollbackTransaction, connection.Close});
+			return new Transaction(new Action[] { CommitTransaction, connection.Close }, new Action[] { RollbackTransaction, connection.Close }, new Action[] { RollbackTransaction, connection.Close });
 		}
 
 		private void CommitTransaction()
 		{
-			if (_tr != null)
+			if(_tr != null)
 			{
-				var tr = _tr;
+				IDbTransaction tr = _tr;
 				_tr = null;
 				tr.Commit();
 			}
@@ -64,9 +70,9 @@ namespace ADOUtils
 
 		private void RollbackTransaction()
 		{
-			if (_tr != null)
+			if(_tr != null)
 			{
-				var tr = _tr;
+				IDbTransaction tr = _tr;
 				_tr = null;
 				tr.Rollback();
 			}
@@ -86,7 +92,7 @@ namespace ADOUtils
 		{
 			using(OpenConnection())
 			{
-				var cmd = _conn.CreateCommand();
+				IDbCommand cmd = _conn.CreateCommand();
 				cmd.Transaction = _tr;
 				cmd.CommandText = sql;
 				AddParameters(cmd, parameters);
@@ -124,11 +130,11 @@ namespace ADOUtils
 		{
 			using(OpenConnection())
 			{
-				var cmd = _conn.CreateCommand();
+				IDbCommand cmd = _conn.CreateCommand();
 				cmd.Transaction = _tr;
 				cmd.CommandText = sql;
 				AddParameters(cmd, parameters);
-				using (IDataReader rdr = cmd.ExecuteReader())
+				using(IDataReader rdr = cmd.ExecuteReader())
 				{
 					while(rdr.Read())
 					{
@@ -152,7 +158,7 @@ namespace ADOUtils
 		{
 			using(OpenConnection())
 			{
-				var cmd = _conn.CreateCommand();
+				IDbCommand cmd = _conn.CreateCommand();
 				cmd.Transaction = _tr;
 				cmd.CommandText = sql;
 				AddParameters(cmd, parameters);
@@ -164,7 +170,7 @@ namespace ADOUtils
 		{
 			foreach(var pi in parameters)
 			{
-				var par = cmd.CreateParameter();
+				IDbDataParameter par = cmd.CreateParameter();
 				par.ParameterName = pi.Key;
 				par.Value = pi.Value ?? DBNull.Value;
 				cmd.Parameters.Add(par);
