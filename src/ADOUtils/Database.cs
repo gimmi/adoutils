@@ -14,9 +14,7 @@ namespace ADOUtils
 		private IDbConnection _conn;
 		private IDbTransaction _tr;
 
-		public Database(string connStr) : this("System.Data.SqlClient", connStr) {}
-
-		public Database(string providerName, string connStr) : this(DbProviderFactories.GetFactory(providerName), connStr) {}
+		public Database(string connStr) : this(DbProviderFactories.GetFactory("System.Data.SqlClient"), connStr) {}
 
 		public Database(DbProviderFactory factory, string connStr)
 		{
