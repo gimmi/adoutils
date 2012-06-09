@@ -66,10 +66,10 @@ INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2
 				IntValue = r["IntValue"], StringValue = r["StringValue"], DateValue = r["DateValue"], GuidValue = r["GuidValue"]
 			}).Single();
 
-			actual.IntValue.Should().Be.EqualTo(1);
-			actual.StringValue.Should().Be.EqualTo("string 1");
-			actual.DateValue.Should().Be.EqualTo(new DateTime(2012, 6, 9, 18, 33, 0));
-			actual.GuidValue.Should().Be.EqualTo(new Guid("A71C8E84-B1A1-4CED-81B7-F551704A33E7"));
+			actual.IntValue.Should().Be.OfType<int>().And.Be.EqualTo(1);
+			actual.StringValue.Should().Be.OfType<string>().And.Be.EqualTo("string 1");
+			actual.DateValue.Should().Be.OfType<DateTime>().And.Be.EqualTo(new DateTime(2012, 6, 9, 18, 33, 0));
+			actual.GuidValue.Should().Be.OfType<Guid>().And.Be.EqualTo(new Guid("A71C8E84-B1A1-4CED-81B7-F551704A33E7"));
 		}
 
 		[Test]
