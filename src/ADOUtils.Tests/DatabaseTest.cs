@@ -48,15 +48,22 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 		}
 
 		[Test]
+		public void Should_exec()
+		{
+			_target.Exec("INSERT Tbl(Name) VALUES('test')").Should().Be.EqualTo(1);
+			_target.Exec("UPDATE Tbl SET Name = Name WHERE 1 = @par", new { par = 2 }).Should().Be.EqualTo(0);
+		}
+
+		[Test]
 		public void Should_manage_connection()
 		{
 			_target.FieldValue<SqlConnection>("_conn").Should().Be.Null();
 
-			var outerConnection = _target.OpenConnection();
+			Connection outerConnection = _target.OpenConnection();
 
 			_target.FieldValue<SqlConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
 
-			var innerConnection = _target.OpenConnection();
+			Connection innerConnection = _target.OpenConnection();
 
 			_target.FieldValue<SqlConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
 
@@ -72,11 +79,11 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 		[Test]
 		public void Should_manage_successful_transaction()
 		{
-			using (_target.OpenConnection())
+			using(_target.OpenConnection())
 			{
 				_target.FieldValue<SqlTransaction>("_tr").Should().Be.Null();
-				
-				var transaction = _target.BeginTransaction();
+
+				Transaction transaction = _target.BeginTransaction();
 
 				_target.FieldValue<SqlTransaction>("_tr").Should().Not.Be.Null();
 
@@ -89,11 +96,11 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 		[Test]
 		public void Should_manage_failing_transaction()
 		{
-			using (_target.OpenConnection())
+			using(_target.OpenConnection())
 			{
 				_target.FieldValue<SqlTransaction>("_tr").Should().Be.Null();
-				
-				var transaction = _target.BeginTransaction();
+
+				Transaction transaction = _target.BeginTransaction();
 
 				_target.FieldValue<SqlTransaction>("_tr").Should().Not.Be.Null();
 
@@ -106,15 +113,15 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 		[Test]
 		public void Should_manage_nested_succesful_transaction()
 		{
-			using (_target.OpenConnection())
+			using(_target.OpenConnection())
 			{
 				_target.FieldValue<SqlTransaction>("_tr").Should().Be.Null();
-				
-				var outerTransaction = _target.BeginTransaction();
+
+				Transaction outerTransaction = _target.BeginTransaction();
 
 				_target.FieldValue<SqlTransaction>("_tr").Should().Not.Be.Null();
 
-				var innerTransaction = _target.BeginTransaction();
+				Transaction innerTransaction = _target.BeginTransaction();
 
 				_target.FieldValue<SqlTransaction>("_tr").Should().Not.Be.Null();
 
@@ -131,15 +138,15 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 		[Test]
 		public void Should_manage_nested_failing_transaction()
 		{
-			using (_target.OpenConnection())
+			using(_target.OpenConnection())
 			{
 				_target.FieldValue<SqlTransaction>("_tr").Should().Be.Null();
-				
-				var outerTransaction = _target.BeginTransaction();
+
+				Transaction outerTransaction = _target.BeginTransaction();
 
 				_target.FieldValue<SqlTransaction>("_tr").Should().Not.Be.Null();
 
-				var innerTransaction = _target.BeginTransaction();
+				Transaction innerTransaction = _target.BeginTransaction();
 
 				_target.FieldValue<SqlTransaction>("_tr").Should().Not.Be.Null();
 
@@ -156,7 +163,7 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 		[Test]
 		public void Should_open_transacion_with_connection()
 		{
-			var tran = _target.BeginTransaction();
+			Transaction tran = _target.BeginTransaction();
 			_target.FieldValue<SqlConnection>("_conn").Should().Not.Be.Null();
 
 			tran.Commit();

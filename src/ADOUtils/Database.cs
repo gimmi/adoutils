@@ -134,6 +134,11 @@ namespace ADOUtils
 			}
 		}
 
+		public virtual int Exec(string sql)
+		{
+			return Exec(sql, new Dictionary<string, object>(0));
+		}
+
 		public virtual int Exec(string sql, object parameters)
 		{
 			return Exec(sql, ToDictionary(parameters));
