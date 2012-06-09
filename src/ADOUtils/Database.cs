@@ -10,8 +10,8 @@ namespace ADOUtils
 	public class Database : IDisposable
 	{
 		private readonly string _connStr;
-		private SqlConnection _conn;
-		private SqlTransaction _tr;
+		private IDbConnection _conn;
+		private IDbTransaction _tr;
 
 		public Database(string connStr)
 		{
@@ -86,7 +86,9 @@ namespace ADOUtils
 		{
 			using(OpenConnection())
 			{
-				var cmd = new SqlCommand(sql, _conn, _tr);
+				var cmd = _conn.CreateCommand();
+				cmd.Transaction = _tr;
+				cmd.CommandText = sql;
 				AddParameters(cmd, parameters);
 				object res = cmd.ExecuteScalar();
 				return DbFieldConversionUtils.Convert<T>(res);
@@ -122,7 +124,9 @@ namespace ADOUtils
 		{
 			using(OpenConnection())
 			{
-				var cmd = new SqlCommand(sql, _conn, _tr);
+				var cmd = _conn.CreateCommand();
+				cmd.Transaction = _tr;
+				cmd.CommandText = sql;
 				AddParameters(cmd, parameters);
 				using (IDataReader rdr = cmd.ExecuteReader())
 				{
@@ -148,17 +152,22 @@ namespace ADOUtils
 		{
 			using(OpenConnection())
 			{
-				var cmd = new SqlCommand(sql, _conn, _tr);
+				var cmd = _conn.CreateCommand();
+				cmd.Transaction = _tr;
+				cmd.CommandText = sql;
 				AddParameters(cmd, parameters);
 				return cmd.ExecuteNonQuery();
 			}
 		}
 
-		private static void AddParameters(SqlCommand cmd, IDictionary<string, object> parameters)
+		private static void AddParameters(IDbCommand cmd, IEnumerable<KeyValuePair<string, object>> parameters)
 		{
 			foreach(var pi in parameters)
 			{
-				cmd.Parameters.AddWithValue(pi.Key, pi.Value ?? DBNull.Value);
+				var par = cmd.CreateParameter();
+				par.ParameterName = pi.Key;
+				par.Value = pi.Value ?? DBNull.Value;
+				cmd.Parameters.Add(par);
 			}
 		}
 

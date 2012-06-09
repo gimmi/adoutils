@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using NUnit.Framework;
 using SharpTestsEx;
@@ -50,30 +49,30 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 		[Test]
 		public void Should_exec()
 		{
-			_target.Exec("INSERT Tbl(Name) VALUES('test')").Should().Be.EqualTo(1);
+			_target.Exec("UPDATE Tbl SET Name = Name").Should().Be.EqualTo(2);
 			_target.Exec("UPDATE Tbl SET Name = Name WHERE 1 = @par", new { par = 2 }).Should().Be.EqualTo(0);
 		}
 
 		[Test]
 		public void Should_manage_connection()
 		{
-			_target.FieldValue<SqlConnection>("_conn").Should().Be.Null();
+			_target.FieldValue<IDbConnection>("_conn").Should().Be.Null();
 
 			Connection outerConnection = _target.OpenConnection();
 
-			_target.FieldValue<SqlConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
+			_target.FieldValue<IDbConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
 
 			Connection innerConnection = _target.OpenConnection();
 
-			_target.FieldValue<SqlConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
+			_target.FieldValue<IDbConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
 
 			innerConnection.Close();
 
-			_target.FieldValue<SqlConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
+			_target.FieldValue<IDbConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
 
 			outerConnection.Close();
 
-			_target.FieldValue<SqlConnection>("_conn").Should().Be.Null();
+			_target.FieldValue<IDbConnection>("_conn").Should().Be.Null();
 		}
 
 		[Test]
@@ -81,15 +80,15 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 		{
 			using(_target.OpenConnection())
 			{
-				_target.FieldValue<SqlTransaction>("_tr").Should().Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 
 				Transaction transaction = _target.BeginTransaction();
 
-				_target.FieldValue<SqlTransaction>("_tr").Should().Not.Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
 
 				transaction.Commit();
 
-				_target.FieldValue<SqlTransaction>("_tr").Should().Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 			}
 		}
 
@@ -98,15 +97,15 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 		{
 			using(_target.OpenConnection())
 			{
-				_target.FieldValue<SqlTransaction>("_tr").Should().Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 
 				Transaction transaction = _target.BeginTransaction();
 
-				_target.FieldValue<SqlTransaction>("_tr").Should().Not.Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
 
 				transaction.Rollback();
 
-				_target.FieldValue<SqlTransaction>("_tr").Should().Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 			}
 		}
 
@@ -115,23 +114,23 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 		{
 			using(_target.OpenConnection())
 			{
-				_target.FieldValue<SqlTransaction>("_tr").Should().Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 
 				Transaction outerTransaction = _target.BeginTransaction();
 
-				_target.FieldValue<SqlTransaction>("_tr").Should().Not.Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
 
 				Transaction innerTransaction = _target.BeginTransaction();
 
-				_target.FieldValue<SqlTransaction>("_tr").Should().Not.Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
 
 				innerTransaction.Commit();
 
-				_target.FieldValue<SqlTransaction>("_tr").Should().Not.Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
 
 				outerTransaction.Commit();
 
-				_target.FieldValue<SqlTransaction>("_tr").Should().Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 			}
 		}
 
@@ -140,23 +139,23 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 		{
 			using(_target.OpenConnection())
 			{
-				_target.FieldValue<SqlTransaction>("_tr").Should().Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 
 				Transaction outerTransaction = _target.BeginTransaction();
 
-				_target.FieldValue<SqlTransaction>("_tr").Should().Not.Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
 
 				Transaction innerTransaction = _target.BeginTransaction();
 
-				_target.FieldValue<SqlTransaction>("_tr").Should().Not.Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
 
 				innerTransaction.Rollback();
 
-				_target.FieldValue<SqlTransaction>("_tr").Should().Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 
 				outerTransaction.Commit();
 
-				_target.FieldValue<SqlTransaction>("_tr").Should().Be.Null();
+				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 			}
 		}
 
@@ -164,15 +163,15 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 		public void Should_open_transacion_with_connection()
 		{
 			Transaction tran = _target.BeginTransaction();
-			_target.FieldValue<SqlConnection>("_conn").Should().Not.Be.Null();
+			_target.FieldValue<IDbConnection>("_conn").Should().Not.Be.Null();
 
 			tran.Commit();
-			_target.FieldValue<SqlConnection>("_conn").Should().Be.Null();
+			_target.FieldValue<IDbConnection>("_conn").Should().Be.Null();
 
 			tran = _target.BeginTransaction();
 
 			tran.Rollback();
-			_target.FieldValue<SqlConnection>("_conn").Should().Be.Null();
+			_target.FieldValue<IDbConnection>("_conn").Should().Be.Null();
 		}
 	}
 }
