@@ -12,7 +12,8 @@ namespace ADOUtils.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			var db = new Database(TestUtils.CreateTestDbAndConnstr(""));
+			TestUtils.CreateTestDb();
+			var db = new Database(TestUtils.ConnStr);
 			using (db.OpenConnection())
 			{
 				_target = db.Yield("SELECT 1 AS Id, 'row 1' AS Name, 'row 1 2' AS Name").Select(CachedDataRecord.Build).First();

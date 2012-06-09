@@ -19,7 +19,10 @@ INSERT Tbl(Id, Name) VALUES(2, 'row 2')
 		[TestFixtureSetUp]
 		public void SetUp()
 		{
-			_target = new Database(TestUtils.CreateTestDbAndConnstr(Script));
+			TestUtils.CreateTestDb();
+			TestUtils.Execute(Script);
+
+			_target = new Database(TestUtils.ConnStr);
 		}
 
 		[Test]

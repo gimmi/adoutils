@@ -5,19 +5,23 @@ namespace ADOUtils.Tests
 	public class TestUtils
 	{
 		private const string ConnStrTemplate = @"Data Source=.\SQLEXPRESS;Initial Catalog={0};Integrated Security=True";
+		private const string DBName = "ADOUtilsTests";
 
-		public static string CreateTestDbAndConnstr(string script)
+		public static void CreateTestDb()
 		{
 			SqlConnection.ClearAllPools();
-			Execute("IF DB_ID('ADOUtilsTests') IS NOT NULL DROP DATABASE ADOUtilsTests");
-			Execute("CREATE DATABASE ADOUtilsTests");
-			Execute("USE ADOUtilsTests\n" + script);
-			return string.Format(ConnStrTemplate, "ADOUtilsTests");
+			Execute("IF DB_ID('ADOUtilsTests') IS NOT NULL DROP DATABASE ADOUtilsTests", "master");
+			Execute("CREATE DATABASE ADOUtilsTests", "master");
 		}
 
-		private static void Execute(string sql)
+		public static string ConnStr
 		{
-			var conn = new SqlConnection(string.Format(ConnStrTemplate, "master"));
+			get { return string.Format(ConnStrTemplate, DBName); }
+		}
+
+		public static void Execute(string sql, string dbName = DBName)
+		{
+			var conn = new SqlConnection(string.Format(ConnStrTemplate, dbName));
 			conn.Open();
 			try
 			{
