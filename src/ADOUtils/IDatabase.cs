@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 
 namespace ADOUtils
 {
-	public interface IDatabase
+	public interface IDatabase : IDisposable
 	{
 		Connection OpenConnection();
 		Transaction BeginTransaction();

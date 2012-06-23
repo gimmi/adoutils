@@ -8,7 +8,7 @@ using System.Text;
 
 namespace ADOUtils
 {
-	public class Database : IDisposable, IDatabase
+	public class Database : IDatabase
 	{
 		private readonly DbProviderFactory _factory;
 		private readonly Action<string> _log;
