@@ -10,15 +10,17 @@ namespace ADOUtils
 	public class Database : IDisposable, IDatabase
 	{
 		private readonly DbProviderFactory _factory;
+		private readonly Action<string> _log;
 		private readonly string _connStr;
 		private IDbConnection _conn;
 		private IDbTransaction _tr;
 
-		public Database(string connStr) : this(connStr, DbProviderFactories.GetFactory("System.Data.SqlClient")) {}
+		public Database(string connStr) : this(connStr, DbProviderFactories.GetFactory("System.Data.SqlClient"), null) {}
 
-		public Database(string connStr, DbProviderFactory factory)
+		public Database(string connStr, DbProviderFactory factory, Action<string> log)
 		{
 			_factory = factory;
+			_log = log;
 			_connStr = connStr;
 		}
 
@@ -28,7 +30,11 @@ namespace ADOUtils
 			{
 				return new Connection();
 			}
-			var conn = _factory.CreateConnection();
+			if(_log != null)
+			{
+				_log.Invoke("Opening connection");
+			}
+			DbConnection conn = _factory.CreateConnection();
 			conn.ConnectionString = _connStr;
 			conn.Open();
 			_conn = conn;
@@ -39,6 +45,10 @@ namespace ADOUtils
 		{
 			if(_conn != null)
 			{
+				if(_log != null)
+				{
+					_log.Invoke("Closing connection");
+				}
 				IDbConnection conn = _conn;
 				_conn = null;
 				conn.Close();
@@ -52,6 +62,10 @@ namespace ADOUtils
 				return new Transaction(rollback: new Action[] { RollbackTransaction });
 			}
 			Connection connection = OpenConnection();
+			if (_log != null)
+			{
+				_log.Invoke("Beginning transaction");
+			}
 			_tr = _conn.BeginTransaction();
 			return new Transaction(new Action[] { CommitTransaction, connection.Close }, new Action[] { RollbackTransaction, connection.Close }, new Action[] { RollbackTransaction, connection.Close });
 		}
@@ -60,6 +74,10 @@ namespace ADOUtils
 		{
 			if(_tr != null)
 			{
+				if (_log != null)
+				{
+					_log.Invoke("Committing transaction");
+				}
 				IDbTransaction tr = _tr;
 				_tr = null;
 				tr.Commit();
@@ -70,6 +88,10 @@ namespace ADOUtils
 		{
 			if(_tr != null)
 			{
+				if (_log != null)
+				{
+					_log.Invoke("Rolling back transaction");
+				}
 				IDbTransaction tr = _tr;
 				_tr = null;
 				tr.Rollback();
@@ -90,6 +112,10 @@ namespace ADOUtils
 		{
 			using(OpenConnection())
 			{
+				if (_log != null)
+				{
+					_log.Invoke(string.Concat("Executing scalar: ", sql, " ", parameters));
+				}
 				IDbCommand cmd = _conn.CreateCommand();
 				cmd.Transaction = _tr;
 				cmd.CommandText = sql;
@@ -128,6 +154,10 @@ namespace ADOUtils
 		{
 			using(OpenConnection())
 			{
+				if (_log != null)
+				{
+					_log.Invoke(string.Concat("Executing reader: ", sql, " ", parameters));
+				}
 				IDbCommand cmd = _conn.CreateCommand();
 				cmd.Transaction = _tr;
 				cmd.CommandText = sql;
@@ -137,6 +167,10 @@ namespace ADOUtils
 					while(rdr.Read())
 					{
 						yield return rdr;
+					}
+					if (_log != null)
+					{
+						_log.Invoke(string.Concat("Closing reader: ", sql, " ", parameters));
 					}
 				}
 			}
@@ -156,6 +190,10 @@ namespace ADOUtils
 		{
 			using(OpenConnection())
 			{
+				if (_log != null)
+				{
+					_log.Invoke(string.Concat("Executing: ", sql, " ", parameters));
+				}
 				IDbCommand cmd = _conn.CreateCommand();
 				cmd.Transaction = _tr;
 				cmd.CommandText = sql;
