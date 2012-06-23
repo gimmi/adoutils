@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Text;
 
 namespace ADOUtils
 {
@@ -114,7 +115,7 @@ namespace ADOUtils
 			{
 				if (_log != null)
 				{
-					_log.Invoke(string.Concat("Executing scalar: ", sql, " ", parameters));
+					_log.Invoke(string.Concat("Executing scalar: ", SqlToString(sql, parameters)));
 				}
 				IDbCommand cmd = _conn.CreateCommand();
 				cmd.Transaction = _tr;
@@ -156,7 +157,7 @@ namespace ADOUtils
 			{
 				if (_log != null)
 				{
-					_log.Invoke(string.Concat("Executing reader: ", sql, " ", parameters));
+					_log.Invoke(string.Concat("Executing reader: ", SqlToString(sql, parameters)));
 				}
 				IDbCommand cmd = _conn.CreateCommand();
 				cmd.Transaction = _tr;
@@ -170,10 +171,15 @@ namespace ADOUtils
 					}
 					if (_log != null)
 					{
-						_log.Invoke(string.Concat("Closing reader: ", sql, " ", parameters));
+						_log.Invoke(string.Concat("Closing reader: ", SqlToString(sql, parameters)));
 					}
 				}
 			}
+		}
+
+		private string SqlToString(string sql, IEnumerable<KeyValuePair<string, object>> parameters)
+		{
+			return string.Concat("`", sql , "` { ", string.Join(", ", parameters.Select(kv => string.Concat(kv.Key, " = `", kv.Value, "`"))), " }");
 		}
 
 		public virtual int Exec(string sql)
@@ -192,7 +198,7 @@ namespace ADOUtils
 			{
 				if (_log != null)
 				{
-					_log.Invoke(string.Concat("Executing: ", sql, " ", parameters));
+					_log.Invoke(string.Concat("Executing: ", SqlToString(sql, parameters)));
 				}
 				IDbCommand cmd = _conn.CreateCommand();
 				cmd.Transaction = _tr;

@@ -5,10 +5,10 @@ using System.Linq;
 using NUnit.Framework;
 using SharpTestsEx;
 
-namespace ADOUtils.Tests
+namespace ADOUtils.Tests.DatabaseTest
 {
 	[TestFixture]
-	public class DatabaseTest
+	public class BasicOperation
 	{
 		public const string TblScript = @"
 CREATE TABLE Tbl(IntValue int NULL, StringValue nvarchar(255) NULL, DateValue datetime NULL, GuidValue uniqueidentifier NULL)
