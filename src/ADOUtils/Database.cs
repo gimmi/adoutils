@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace ADOUtils
 {
-	public class Database : IDisposable
+	public class Database : IDisposable, IDatabase
 	{
 		private readonly DbProviderFactory _factory;
 		private readonly string _connStr;
