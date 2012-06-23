@@ -4,39 +4,35 @@ namespace ADOUtils
 {
 	public class Transaction : IDisposable
 	{
-		private readonly Action[] _commitActions;
-		private readonly Action[] _rollbackActions;
-		private readonly Action[] _disposeActions;
+		private readonly Connection _connection;
+		private readonly Action _commitActions;
+		private readonly Action _rollbackActions;
+		private readonly Action _disposeActions;
 
-		public Transaction(Action[] commit = null, Action[] rollback = null, Action[] dispose = null)
+		public Transaction(Connection connection, Action commit = null, Action rollback = null, Action dispose = null)
 		{
-			_commitActions = commit ?? new Action[] { delegate { } };
-			_rollbackActions = rollback ?? new Action[] { delegate { } };
-			_disposeActions = dispose ?? new Action[] { delegate { } };
+			_connection = connection;
+			_commitActions = commit ?? delegate { };
+			_rollbackActions = rollback ?? delegate { };
+			_disposeActions = dispose ?? delegate { };
 		}
 
 		public virtual void Commit()
 		{
-			foreach (var commitAction in _commitActions)
-			{
-				commitAction.Invoke();
-			}
+			_commitActions.Invoke();
+			_connection.Close();
 		}
 
 		public virtual void Rollback()
 		{
-			foreach (var rollbackAction in _rollbackActions)
-			{
-				rollbackAction.Invoke();
-			}
+			_rollbackActions.Invoke();
+			_connection.Close();
 		}
 
 		public virtual void Dispose()
 		{
-			foreach (var disposeAction in _disposeActions)
-			{
-				disposeAction.Invoke();
-			}
+			_disposeActions.Invoke();
+			_connection.Dispose();
 		}
 	}
 }

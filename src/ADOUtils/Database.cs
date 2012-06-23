@@ -58,17 +58,17 @@ namespace ADOUtils
 
 		public virtual Transaction BeginTransaction()
 		{
-			if(_tr != null)
-			{
-				return new Transaction(rollback: new Action[] { RollbackTransaction });
-			}
 			Connection connection = OpenConnection();
+			if (_tr != null)
+			{
+				return new Transaction(connection, rollback: RollbackTransaction);
+			}
 			if (_log != null)
 			{
 				_log.Invoke("Beginning transaction");
 			}
 			_tr = _conn.BeginTransaction();
-			return new Transaction(new Action[] { CommitTransaction, connection.Close }, new Action[] { RollbackTransaction, connection.Close }, new Action[] { RollbackTransaction, connection.Close });
+			return new Transaction(connection, CommitTransaction, RollbackTransaction, RollbackTransaction);
 		}
 
 		private void CommitTransaction()
