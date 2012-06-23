@@ -10,10 +10,18 @@ namespace ADOUtils.Tests
 	[TestFixture]
 	public class DatabaseTest
 	{
-		public const string Script = @"
+		public const string TblScript = @"
 CREATE TABLE Tbl(IntValue int NULL, StringValue nvarchar(255) NULL, DateValue datetime NULL, GuidValue uniqueidentifier NULL)
 INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(1, 'string 1', '2012-06-09 18:33', 'A71C8E84-B1A1-4CED-81B7-F551704A33E7')
 INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2012-06-09 18:34', 'A9610CE3-7013-4C78-9C32-452D5A3CE450')
+";
+		public const string SPScript = @"
+CREATE PROCEDURE SP
+	@Param1 nvarchar(max),
+	@Param2 int
+AS BEGIN
+	SELECT @param1 AS Param1, @Param2 AS Param2
+END
 ";
 		private Database _target;
 
@@ -21,7 +29,8 @@ INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2
 		public void SetUp()
 		{
 			TestUtils.CreateTestDb();
-			TestUtils.Execute(Script);
+			TestUtils.Execute(TblScript);
+			TestUtils.Execute(SPScript);
 
 			_target = new Database(TestUtils.ConnStr);
 		}
@@ -191,6 +200,18 @@ INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2
 
 			tran.Rollback();
 			_target.FieldValue<IDbConnection>("_conn").Should().Be.Null();
+		}
+
+		[Test]
+		public void Should_execute_stored_procedure()
+		{
+			var actual = _target.Yield("EXEC SP @Param1, @Param2", new { Param1 = "p1", Param2 = 2 }).Select(r => new {
+				Param1 = r["Param1"], 
+				Param2 = r["Param2"]
+			}).Single();
+
+			actual.Param1.Should().Be.EqualTo("p1");
+			actual.Param2.Should().Be.EqualTo(2);
 		}
 	}
 }
