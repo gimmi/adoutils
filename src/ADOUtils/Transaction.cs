@@ -5,8 +5,8 @@ namespace ADOUtils
 	public class Transaction : IDisposable
 	{
 		private readonly Connection _connection;
-		private readonly Action _commitAction;
-		private readonly Action _rollbackAction;
+		private Action _commitAction;
+		private Action _rollbackAction;
 
 		public Transaction(Connection connection, Action commit, Action rollback)
 		{
@@ -17,20 +17,23 @@ namespace ADOUtils
 
 		public virtual void Commit()
 		{
-			_commitAction.Invoke();
+			Action commitAction = _commitAction;
+			_commitAction = _rollbackAction = delegate {};
+			commitAction.Invoke();
 			_connection.Close();
 		}
 
 		public virtual void Rollback()
 		{
-			_rollbackAction.Invoke();
+			Action rollbackAction = _rollbackAction;
+			_rollbackAction = _commitAction = delegate {};
+			rollbackAction.Invoke();
 			_connection.Close();
 		}
 
 		public virtual void Dispose()
 		{
-			_rollbackAction.Invoke();
-			_connection.Dispose();
+			Rollback();
 		}
 	}
 }
