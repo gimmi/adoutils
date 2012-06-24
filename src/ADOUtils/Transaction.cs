@@ -7,14 +7,12 @@ namespace ADOUtils
 		private readonly Connection _connection;
 		private readonly Action _commitAction;
 		private readonly Action _rollbackAction;
-		private readonly Action _disposeAction;
 
-		public Transaction(Connection connection, Action commit, Action rollback, Action dispose)
+		public Transaction(Connection connection, Action commit, Action rollback)
 		{
 			_connection = connection;
 			_commitAction = commit;
 			_rollbackAction = rollback;
-			_disposeAction = dispose;
 		}
 
 		public virtual void Commit()
@@ -31,7 +29,7 @@ namespace ADOUtils
 
 		public virtual void Dispose()
 		{
-			_disposeAction.Invoke();
+			_rollbackAction.Invoke();
 			_connection.Dispose();
 		}
 	}

@@ -62,7 +62,7 @@ namespace ADOUtils
 			Connection connection = OpenConnection();
 			if (_tr != null)
 			{
-				return new Transaction(connection, delegate { }, NotifyNestedTransactionRollback, NotifyNestedTransactionRollback);
+				return new Transaction(connection, delegate { }, NotifyNestedTransactionRollback);
 			}
 			if (_log != null)
 			{
@@ -70,7 +70,7 @@ namespace ADOUtils
 			}
 			_tr = _conn.BeginTransaction();
 			_nestedTransactionRollback = false;
-			return new Transaction(connection, CommitTransaction, RollbackTransaction, RollbackTransaction);
+			return new Transaction(connection, CommitTransaction, RollbackTransaction);
 		}
 
 		private void NotifyNestedTransactionRollback()
