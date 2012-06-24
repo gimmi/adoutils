@@ -62,7 +62,7 @@ namespace ADOUtils
 			Connection connection = OpenConnection();
 			if (_tr != null)
 			{
-				return new Transaction(connection, rollback: NotifyNestedTransactionRollback);
+				return new Transaction(connection, delegate { }, NotifyNestedTransactionRollback, NotifyNestedTransactionRollback);
 			}
 			if (_log != null)
 			{
