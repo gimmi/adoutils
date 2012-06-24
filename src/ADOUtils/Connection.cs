@@ -11,12 +11,12 @@ namespace ADOUtils
 			_action = action ?? delegate {};
 		}
 
-		public void Close()
+		public virtual void Close()
 		{
 			_action.Invoke();
 		}
 
-		public void Dispose()
+		public virtual void Dispose()
 		{
 			_action.Invoke();
 		}

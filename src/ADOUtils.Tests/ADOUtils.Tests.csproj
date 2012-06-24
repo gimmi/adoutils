@@ -63,6 +63,7 @@
     <Compile Include="IdentityMapTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUtils.cs" />
+    <Compile Include="TransactionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
