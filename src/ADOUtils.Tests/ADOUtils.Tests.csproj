@@ -58,6 +58,7 @@
     <Compile Include="CachedDataRecordTest.cs" />
     <Compile Include="DatabaseTest\BasicOperation.cs" />
     <Compile Include="DatabaseTest\Logging.cs" />
+    <Compile Include="DatabaseTest\TransactionManagement.cs" />
     <Compile Include="DbFieldConversionUtilsTest.cs" />
     <Compile Include="IdentityMapTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

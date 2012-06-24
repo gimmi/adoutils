@@ -15,6 +15,7 @@ namespace ADOUtils
 		private readonly string _connStr;
 		private IDbConnection _conn;
 		private IDbTransaction _tr;
+		private bool _canCommit;
 
 		public Database(string connStr) : this(connStr, DbProviderFactories.GetFactory("System.Data.SqlClient"), null) {}
 
@@ -61,13 +62,14 @@ namespace ADOUtils
 			Connection connection = OpenConnection();
 			if (_tr != null)
 			{
-				return new Transaction(connection, rollback: RollbackTransaction);
+				return new Transaction(connection, rollback: () => _canCommit = false);
 			}
 			if (_log != null)
 			{
 				_log.Invoke("Beginning transaction");
 			}
 			_tr = _conn.BeginTransaction();
+			_canCommit = true;
 			return new Transaction(connection, CommitTransaction, RollbackTransaction, RollbackTransaction);
 		}
 
@@ -75,6 +77,10 @@ namespace ADOUtils
 		{
 			if(_tr != null)
 			{
+				if(!_canCommit)
+				{
+					throw new DataException("Cannot commit transaction when one of the nested transaction has been rolled back");
+				}
 				if (_log != null)
 				{
 					_log.Invoke("Committing transaction");
