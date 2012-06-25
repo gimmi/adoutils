@@ -22,33 +22,48 @@ namespace ADOUtils.Tests
 		}
 
 		[Test]
-		public void Should_invoke_commit_action()
+		public void Should_invoke_commit_action_once()
 		{
 			_target.Commit();
+			_target.Commit();
+			_target.Rollback();
+			_target.Rollback();
+			_target.Dispose();
+			_target.Dispose();
 
 			_commitCount.Should().Be.EqualTo(1);
 			_rollbackCount.Should().Be.EqualTo(0);
-			_connection.Verify(x=>x.Close(), Times.Once());
+			_connection.Verify(x => x.Close(), Times.Once());
 		}
 
 		[Test]
-		public void Should_invoke_rollback_action()
+		public void Should_invoke_rollback_action_once()
 		{
 			_target.Rollback();
+			_target.Rollback();
+			_target.Commit();
+			_target.Commit();
+			_target.Dispose();
+			_target.Dispose();
 
 			_commitCount.Should().Be.EqualTo(0);
 			_rollbackCount.Should().Be.EqualTo(1);
-			_connection.Verify(x=>x.Close(), Times.Once());
+			_connection.Verify(x => x.Close(), Times.Once());
 		}
 
 		[Test]
 		public void Should_rollback_when_disposing_and_no_calls_to_commit_or_rollback_made()
 		{
+			_target.Dispose();
+			_target.Dispose();
 			_target.Rollback();
+			_target.Rollback();
+			_target.Commit();
+			_target.Commit();
 
 			_commitCount.Should().Be.EqualTo(0);
 			_rollbackCount.Should().Be.EqualTo(1);
-			_connection.Verify(x=>x.Close(), Times.Once());
+			_connection.Verify(x => x.Close(), Times.Once());
 		}
 	}
 }
