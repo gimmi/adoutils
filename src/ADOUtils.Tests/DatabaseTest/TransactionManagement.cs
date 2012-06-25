@@ -131,30 +131,5 @@ CREATE TABLE Tbl(IntValue int NULL)
 			_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 			_target.Scalar<int>("SELECT COUNT(*) FROM Tbl").Should().Be.EqualTo(0);
 		}
-
-		[Test]
-		public void Should_safely_call_commit_and_rollback_multiple_times()
-		{
-			using (var outer = _target.BeginTransaction())
-			{
-				_target.Exec("INSERT INTO Tbl(IntValue) VALUES(1)");
-
-				using (var inner = _target.BeginTransaction())
-				{
-					_target.Exec("INSERT INTO Tbl(IntValue) VALUES(2)");
-					inner.Commit();
-					inner.Rollback();
-					inner.Commit();
-				}
-
-				_target.Exec("INSERT INTO Tbl(IntValue) VALUES(3)");
-
-				outer.Commit();
-				outer.Rollback();
-				outer.Commit();
-			}
-
-			_target.Scalar<int>("SELECT COUNT(*) FROM Tbl").Should().Be.EqualTo(3);
-		}
 	}
 }

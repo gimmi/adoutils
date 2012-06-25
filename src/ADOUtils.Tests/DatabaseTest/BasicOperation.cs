@@ -104,23 +104,6 @@ END
 		}
 
 		[Test]
-		public void Should_manage_successful_transaction()
-		{
-			using(_target.OpenConnection())
-			{
-				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
-
-				Transaction transaction = _target.BeginTransaction();
-
-				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
-
-				transaction.Commit();
-
-				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
-			}
-		}
-
-		[Test]
 		public void Should_manage_failing_transaction()
 		{
 			using(_target.OpenConnection())
@@ -132,56 +115,6 @@ END
 				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
 
 				transaction.Rollback();
-
-				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
-			}
-		}
-
-		[Test]
-		public void Should_manage_nested_succesful_transaction()
-		{
-			using(_target.OpenConnection())
-			{
-				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
-
-				Transaction outerTransaction = _target.BeginTransaction();
-
-				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
-
-				Transaction innerTransaction = _target.BeginTransaction();
-
-				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
-
-				innerTransaction.Commit();
-
-				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
-
-				outerTransaction.Commit();
-
-				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
-			}
-		}
-
-		[Test]
-		public void Should_manage_nested_failing_transaction()
-		{
-			using(_target.OpenConnection())
-			{
-				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
-
-				Transaction outerTransaction = _target.BeginTransaction();
-
-				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
-
-				Transaction innerTransaction = _target.BeginTransaction();
-
-				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
-
-				innerTransaction.Rollback();
-
-				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
-
-				outerTransaction.Commit();
 
 				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 			}
