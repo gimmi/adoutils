@@ -7,18 +7,21 @@ namespace ADOUtils.Tests.DatabaseTest
 	[TestFixture]
 	public class TransactionManagement
 	{
-		public const string TblScript = @"
-CREATE TABLE Tbl(IntValue int NULL)
-";
 		private Database _target;
 
 		[SetUp]
 		public void SetUp()
 		{
 			TestUtils.CreateTestDb();
-			TestUtils.Execute(TblScript);
+			TestUtils.Execute(@"CREATE TABLE Tbl(IntValue int NULL)");
 
 			_target = new Database(TestUtils.ConnStr);
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			_target.Dispose();
 		}
 
 		[Test]
@@ -36,7 +39,7 @@ CREATE TABLE Tbl(IntValue int NULL)
 				tx.Rollback();
 			}
 
-			using(var tx = _target.BeginTransaction())
+			using(_target.BeginTransaction())
 			{
 				_target.Exec("INSERT INTO Tbl(IntValue) VALUES(3)");
 			}
