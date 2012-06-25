@@ -84,6 +84,7 @@ namespace ADOUtils
 			{
 				if(_nestedTransactionRollback)
 				{
+					RollbackTransaction();
 					throw new DataException("Cannot commit transaction when one of the nested transaction has been rolled back");
 				}
 				if (_log != null)

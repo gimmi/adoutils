@@ -128,6 +128,7 @@ CREATE TABLE Tbl(IntValue int NULL)
 					.And.Exception.Message.Should().Be.EqualTo("Cannot commit transaction when one of the nested transaction has been rolled back");
 			}
 
+			_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 			_target.Scalar<int>("SELECT COUNT(*) FROM Tbl").Should().Be.EqualTo(0);
 		}
 
