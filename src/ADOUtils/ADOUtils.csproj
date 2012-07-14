@@ -44,8 +44,10 @@
     <Compile Include="Connection.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DbFieldConversionUtils.cs" />
+    <Compile Include="IConnection.cs" />
     <Compile Include="IDatabase.cs" />
     <Compile Include="IdentityMap.cs" />
+    <Compile Include="ITransaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transaction.cs" />
   </ItemGroup>

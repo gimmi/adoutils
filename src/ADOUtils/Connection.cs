@@ -2,7 +2,7 @@
 
 namespace ADOUtils
 {
-	public class Connection : IDisposable
+	public class Connection : IConnection
 	{
 		private readonly Action _action;
 

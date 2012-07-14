@@ -86,11 +86,11 @@ END
 		{
 			_target.FieldValue<IDbConnection>("_conn").Should().Be.Null();
 
-			Connection outerConnection = _target.OpenConnection();
+			IConnection outerConnection = _target.OpenConnection();
 
 			_target.FieldValue<IDbConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
 
-			Connection innerConnection = _target.OpenConnection();
+			IConnection innerConnection = _target.OpenConnection();
 
 			_target.FieldValue<IDbConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
 
@@ -110,7 +110,7 @@ END
 			{
 				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 
-				Transaction transaction = _target.BeginTransaction();
+				ITransaction transaction = _target.BeginTransaction();
 
 				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
 
@@ -123,7 +123,7 @@ END
 		[Test]
 		public void Should_open_transacion_with_connection()
 		{
-			Transaction tran = _target.BeginTransaction();
+			ITransaction tran = _target.BeginTransaction();
 			_target.FieldValue<IDbConnection>("_conn").Should().Not.Be.Null();
 
 			tran.Commit();

@@ -2,14 +2,14 @@
 
 namespace ADOUtils
 {
-	public class Transaction : IDisposable
+	public class Transaction : ITransaction
 	{
-		private readonly Connection _connection;
+		private readonly IConnection _connection;
 		private readonly Action _commitAction;
 		private readonly Action _rollbackAction;
 		private bool _done = false;
 
-		public Transaction(Connection connection, Action commit, Action rollback)
+		public Transaction(IConnection connection, Action commit, Action rollback)
 		{
 			_connection = connection;
 			_commitAction = commit;

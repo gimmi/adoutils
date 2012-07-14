@@ -26,7 +26,7 @@ namespace ADOUtils
 			_connStr = connStr;
 		}
 
-		public virtual Connection OpenConnection()
+		public virtual IConnection OpenConnection()
 		{
 			if(_conn != null)
 			{
@@ -57,9 +57,9 @@ namespace ADOUtils
 			}
 		}
 
-		public virtual Transaction BeginTransaction()
+		public virtual ITransaction BeginTransaction()
 		{
-			Connection connection = OpenConnection();
+			IConnection connection = OpenConnection();
 			if (_tr != null)
 			{
 				return new Transaction(connection, delegate { }, NotifyNestedTransactionRollback);

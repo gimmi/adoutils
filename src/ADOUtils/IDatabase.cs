@@ -6,8 +6,8 @@ namespace ADOUtils
 {
 	public interface IDatabase : IDisposable
 	{
-		Connection OpenConnection();
-		Transaction BeginTransaction();
+		IConnection OpenConnection();
+		ITransaction BeginTransaction();
 		T Scalar<T>(string sql);
 		T Scalar<T>(string sql, object parameters);
 		T Scalar<T>(string sql, IDictionary<string, object> parameters);
