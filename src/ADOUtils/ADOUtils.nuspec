@@ -8,6 +8,7 @@
     <owners>$author$</owners>
     <licenseUrl>https://github.com/gimmi/adoutils/raw/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/gimmi/adoutils</projectUrl>
+	<iconUrl>https://github.com/gimmi/adoutils/raw/master/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <tags>ado adonet ado.net db database sql sqlserver data util utils</tags>
