@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using NUnit.Framework;
 using SharpTestsEx;
@@ -145,6 +146,34 @@ END
 
 			actual.Param1.Should().Be.EqualTo("p1");
 			actual.Param2.Should().Be.EqualTo(2);
+		}
+
+		[Test]
+		public void Should_give_access_to_raw_command()
+		{
+			using (var cmd = _target.CreateCommand())
+			{
+				var sqlCmd = (SqlCommand)cmd.DbCommand;
+				sqlCmd.CommandText = "Select @IntValue";
+				sqlCmd.Parameters.AddWithValue("IntValue", 123);
+				sqlCmd.ExecuteScalar().Should().Be.EqualTo(123);
+			}
+		}
+
+		[Test]
+		public void Should_put_raw_command_in_transaction()
+		{
+			using(_target.BeginTransaction())
+			{
+				using (var cmd = _target.CreateCommand())
+				{
+					var sqlCmd = (SqlCommand)cmd.DbCommand;
+					sqlCmd.CommandText = "INSERT INTO Tbl(IntValue) VALUES(123)";
+					sqlCmd.ExecuteNonQuery();
+				}
+			}
+
+			_target.Scalar<int>("SELECT COUNT(*) FROM Tbl WHERE IntValue = 123").Should().Be.EqualTo(0);
 		}
 	}
 }

@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using System.Text;
 
 namespace ADOUtils
 {
@@ -123,19 +122,25 @@ namespace ADOUtils
 
 		public virtual T Scalar<T>(string sql, IDictionary<string, object> parameters)
 		{
-			using(OpenConnection())
+			using (var cmd = CreateCommand())
 			{
 				if (_log != null)
 				{
 					_log.Invoke(string.Concat("Executing scalar: ", SqlToString(sql, parameters)));
 				}
-				IDbCommand cmd = _conn.CreateCommand();
-				cmd.Transaction = _tr;
-				cmd.CommandText = sql;
-				AddParameters(cmd, parameters);
-				object res = cmd.ExecuteScalar();
+				cmd.DbCommand.CommandText = sql;
+				AddParameters(cmd.DbCommand, parameters);
+				object res = cmd.DbCommand.ExecuteScalar();
 				return DbFieldConversionUtils.Convert<T>(res);
 			}
+		}
+
+		public virtual ICommand CreateCommand()
+		{
+			IConnection conn = OpenConnection();
+			IDbCommand cmd = _conn.CreateCommand();
+			cmd.Transaction = _tr;
+			return new Command(cmd, conn);
 		}
 
 		public virtual IEnumerable<IDataRecord> Read(string sql)
@@ -165,17 +170,15 @@ namespace ADOUtils
 
 		public virtual IEnumerable<IDataRecord> Yield(string sql, IDictionary<string, object> parameters)
 		{
-			using(OpenConnection())
+			using(var cmd = CreateCommand())
 			{
 				if (_log != null)
 				{
 					_log.Invoke(string.Concat("Executing reader: ", SqlToString(sql, parameters)));
 				}
-				IDbCommand cmd = _conn.CreateCommand();
-				cmd.Transaction = _tr;
-				cmd.CommandText = sql;
-				AddParameters(cmd, parameters);
-				using(IDataReader rdr = cmd.ExecuteReader())
+				cmd.DbCommand.CommandText = sql;
+				AddParameters(cmd.DbCommand, parameters);
+				using (IDataReader rdr = cmd.DbCommand.ExecuteReader())
 				{
 					while(rdr.Read())
 					{
@@ -206,17 +209,15 @@ namespace ADOUtils
 
 		public virtual int Exec(string sql, IDictionary<string, object> parameters)
 		{
-			using(OpenConnection())
+			using(var cmd = CreateCommand())
 			{
 				if (_log != null)
 				{
 					_log.Invoke(string.Concat("Executing: ", SqlToString(sql, parameters)));
 				}
-				IDbCommand cmd = _conn.CreateCommand();
-				cmd.Transaction = _tr;
-				cmd.CommandText = sql;
-				AddParameters(cmd, parameters);
-				return cmd.ExecuteNonQuery();
+				cmd.DbCommand.CommandText = sql;
+				AddParameters(cmd.DbCommand, parameters);
+				return cmd.DbCommand.ExecuteNonQuery();
 			}
 		}
 

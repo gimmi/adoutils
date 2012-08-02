@@ -20,5 +20,6 @@ namespace ADOUtils
 		int Exec(string sql);
 		int Exec(string sql, object parameters);
 		int Exec(string sql, IDictionary<string, object> parameters);
+		ICommand CreateCommand();
 	}
 }
