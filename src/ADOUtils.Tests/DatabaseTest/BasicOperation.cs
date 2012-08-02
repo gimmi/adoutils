@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Linq;
 using NUnit.Framework;
 using SharpTestsEx;
@@ -140,7 +141,7 @@ END
 ");
 
 			var actual = _target.Yield("EXEC SP @Param1, @Param2", new { Param1 = "p1", Param2 = 2 }).Select(r => new {
-				Param1 = r["Param1"], 
+				Param1 = r["Param1"],
 				Param2 = r["Param2"]
 			}).Single();
 
@@ -151,7 +152,7 @@ END
 		[Test]
 		public void Should_give_access_to_raw_command()
 		{
-			using (var cmd = _target.CreateCommand())
+			using(ICommand cmd = _target.CreateCommand())
 			{
 				var sqlCmd = (SqlCommand)cmd.DbCommand;
 				sqlCmd.CommandText = "Select @IntValue";
@@ -165,7 +166,7 @@ END
 		{
 			using(_target.BeginTransaction())
 			{
-				using (var cmd = _target.CreateCommand())
+				using(ICommand cmd = _target.CreateCommand())
 				{
 					var sqlCmd = (SqlCommand)cmd.DbCommand;
 					sqlCmd.CommandText = "INSERT INTO Tbl(IntValue) VALUES(123)";
@@ -174,6 +175,20 @@ END
 			}
 
 			_target.Scalar<int>("SELECT COUNT(*) FROM Tbl WHERE IntValue = 123").Should().Be.EqualTo(0);
+		}
+
+		[Test]
+		public void Should_allow_dbparameters_as_parameters()
+		{
+			TestUtils.Execute(@"
+CREATE TABLE TblWithStrangeDataType(DateValue datetime2 NULL)
+");
+			Executing.This(() => _target.Exec("INSERT INTO TblWithStrangeDataType(DateValue) VALUES(@DateValue)", new { DateValue = DateTime.MinValue })).Should().Throw<SqlTypeException>()
+				.And.Exception.Message.Should().Be.EqualTo("SqlDateTime overflow. Must be between 1/1/1753 12:00:00 AM and 12/31/9999 11:59:59 PM.");
+
+			_target.Exec("INSERT INTO TblWithStrangeDataType(DateValue) VALUES(@DateValue)", new {
+				DateValue = new SqlParameter { DbType = DbType.DateTime2, Value = DateTime.MinValue }
+			}).Should().Be.EqualTo(1);
 		}
 	}
 }

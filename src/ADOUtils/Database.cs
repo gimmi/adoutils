@@ -225,9 +225,17 @@ namespace ADOUtils
 		{
 			foreach(var pi in parameters)
 			{
-				IDbDataParameter par = cmd.CreateParameter();
+				IDataParameter par;
+				if (pi.Value is IDataParameter)
+				{
+					par = pi.Value as IDataParameter;
+				}
+				else
+				{
+					par = cmd.CreateParameter();
+					par.Value = pi.Value ?? DBNull.Value;
+				}
 				par.ParameterName = pi.Key;
-				par.Value = pi.Value ?? DBNull.Value;
 				cmd.Parameters.Add(par);
 			}
 		}
