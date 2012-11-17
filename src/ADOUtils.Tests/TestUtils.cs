@@ -1,10 +1,17 @@
 ﻿using System.Data.SqlClient;
+using System.IO;
+using System.Reflection;
 
 namespace ADOUtils.Tests
 {
 	public class TestUtils
 	{
-		private const string ConnStrTemplate = @"Data Source=.\SQLEXPRESS;Initial Catalog={0};Integrated Security=True";
+        /*
+         * Uses SQL server LocalDB
+         * Database file is located at: C:\Users\<user>\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\v11.0
+         * see http://msdn.microsoft.com/en-us/library/hh510202.aspx
+         */
+        private const string ConnStrTemplate = @"Server=(localdb)\v11.0;Integrated Security=true;Initial Catalog={0}";
 		private const string DBName = "ADOUtilsTests";
 
 		public static void CreateTestDb()
