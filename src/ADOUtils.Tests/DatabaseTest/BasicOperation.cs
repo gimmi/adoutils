@@ -53,6 +53,14 @@ INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2
 		}
 
 		[Test]
+		public void Should_return_default_value_for_type_when_scalar_return_no_rows()
+		{
+			_target.Scalar<int>("SELECT IntValue FROM Tbl WHERE 1 = 2").Should().Be.EqualTo(0);
+			_target.Scalar<string>("SELECT StringValue FROM Tbl WHERE 1 = 2").Should().Be.Null();
+			_target.Scalar<int?>("SELECT IntValue FROM Tbl WHERE 1 = 2").Should().Not.Have.Value();
+		}
+
+		[Test]
 		public void Should_exec()
 		{
 			_target.Exec("UPDATE Tbl SET StringValue = StringValue").Should().Be.EqualTo(2);

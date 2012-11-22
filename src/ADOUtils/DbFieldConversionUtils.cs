@@ -16,34 +16,23 @@ namespace ADOUtils
 			return Convert(record[name], def);
 		}
 
-		public static T Convert<T>(object value, T def)
-		{
-			return Convert(value, () => def);
-		}
-
 		public static T Convert<T>(object value)
 		{
-			return Convert<T>(value, delegate {
-				throw new NoNullAllowedException("Unexpected NULL value from database");
-			});
+			return Convert(value, default(T));
 		}
 
-		private static T Convert<T>(object value, Func<T> defFn)
+		public static T Convert<T>(object value, T def)
 		{
-			if (value == DBNull.Value)
+			if (value == DBNull.Value || value == null)
 			{
-				return defFn();
+				return def;
 			}
-			Type conversionType = typeof(T);
-			if(conversionType.IsGenericType && conversionType.GetGenericTypeDefinition() == typeof(Nullable<>))
+			Type type = typeof (T);
+			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>))
 			{
-				if(value == null)
-				{
-					return Activator.CreateInstance<T>();
-				}
-				conversionType = new NullableConverter(conversionType).UnderlyingType;
+				type = new NullableConverter(type).UnderlyingType;
 			}
-			return (T)System.Convert.ChangeType(value, conversionType);
+			return (T) System.Convert.ChangeType(value, type);
 		}
 	}
 }
