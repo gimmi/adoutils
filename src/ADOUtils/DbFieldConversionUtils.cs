@@ -11,21 +11,11 @@ namespace ADOUtils
 			return Convert<T>(record[name]);
 		}
 
-		public static T Get<T>(this IDataRecord record, string name, T def)
-		{
-			return Convert(record[name], def);
-		}
-
 		public static T Convert<T>(object value)
-		{
-			return Convert(value, default(T));
-		}
-
-		public static T Convert<T>(object value, T def)
 		{
 			if (value == DBNull.Value || value == null)
 			{
-				return def;
+				return default(T);
 			}
 			Type type = typeof (T);
 			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>))
