@@ -77,6 +77,7 @@ namespace ADOUtils.Tests
 		public void Should_convert_between_different_numeric_types()
 		{
 			DbFieldConversionUtils.Convert<Int32>(3.14).Should().Be.EqualTo(3);
+			DbFieldConversionUtils.Convert<Int32>(3.55).Should().Be.EqualTo(4);
 			DbFieldConversionUtils.Convert<Int32>((UInt16)5).Should().Be.EqualTo(5);
 			DbFieldConversionUtils.Convert<Double>(5).Should().Be.EqualTo(5);
 		}
