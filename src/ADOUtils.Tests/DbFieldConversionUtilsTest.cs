@@ -23,6 +23,7 @@ namespace ADOUtils.Tests
 			rec.Get<string>("string").Should().Be.EqualTo("string");
 			rec.Get<int>("int").Should().Be.EqualTo(123);
 			rec.Get<Guid>("guid").Should().Be.EqualTo(new Guid("b8903b30-0862-4440-8058-ac721b1a2eda"));
+			Executing.This(() => rec.Require<string>("null")).Should().Throw<NoNullAllowedException>();
 		}
 
 		[Test]
