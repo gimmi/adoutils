@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using NUnit.Framework;
 using SharpTestsEx;
 
@@ -133,6 +134,28 @@ namespace ADOUtils.Tests.DatabaseTest
 
 			_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
 			_target.Scalar<int>("SELECT COUNT(*) FROM Tbl").Should().Be.EqualTo(0);
+		}
+
+		[Test]
+		public void Should_throw_error_when_trying_to_begin_nested_transaction_with_different_isolation_level()
+		{
+			_target.BeginTransaction(IsolationLevel.ReadCommitted);
+			Executing.This(() => _target.BeginTransaction(IsolationLevel.Chaos)).Should().Throw<InvalidOperationException>()
+				.And.Exception.Message.Should().Be.EqualTo("Cannot begin a 'Chaos' transaction nested in a 'ReadCommitted' transaction.");
+		}
+
+		[Test]
+		public void Should_allow_the_creation_of_nested_transaction_with_compatible_isolation_level()
+		{
+			_target.BeginTransaction(IsolationLevel.ReadCommitted);
+			_target.BeginTransaction(IsolationLevel.ReadCommitted);
+		}
+
+		[Test]
+		public void Should_allow_the_creation_of_nested_transaction_with_unspecified_isolation_level()
+		{
+			_target.BeginTransaction(IsolationLevel.ReadUncommitted);
+			_target.BeginTransaction();
 		}
 	}
 }

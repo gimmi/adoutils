@@ -7,7 +7,7 @@ namespace ADOUtils
 	public interface IDatabase : IDisposable
 	{
 		IConnection OpenConnection();
-		ITransaction BeginTransaction();
+		ITransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified);
 		T Scalar<T>(string sql);
 		T Scalar<T>(string sql, object parameters);
 		T Scalar<T>(string sql, IDictionary<string, object> parameters);

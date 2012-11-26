@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace ADOUtils
@@ -56,20 +57,29 @@ namespace ADOUtils
 			}
 		}
 
-		public virtual ITransaction BeginTransaction()
+		public virtual ITransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
 		{
 			IConnection connection = OpenConnection();
 			if (_tr != null)
 			{
+				CheckIsolationLevelConsistency(_tr.IsolationLevel, isolationLevel);
 				return new Transaction(connection, delegate { }, NotifyNestedTransactionRollback);
 			}
 			if (_log != null)
 			{
 				_log.Invoke("Beginning transaction");
 			}
-			_tr = _conn.BeginTransaction();
+			_tr = _conn.BeginTransaction(isolationLevel);
 			_nestedTransactionRollback = false;
 			return new Transaction(connection, CommitTransaction, RollbackTransaction);
+		}
+
+		private void CheckIsolationLevelConsistency(IsolationLevel previous, IsolationLevel current)
+		{
+			if (current != IsolationLevel.Unspecified && current!=previous)
+			{
+				throw new InvalidOperationException(string.Concat("Cannot begin a '", current, "' transaction nested in a '", previous, "' transaction."));
+			}
 		}
 
 		private void NotifyNestedTransactionRollback()
