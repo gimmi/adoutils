@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace ADOUtils
 {
+	[Obsolete("Use System.Collections.Concurrent.ConcurrentDictionary instead, with GetOrAdd method.")]
 	public class IdentityMap<T>
 	{
 		private readonly Dictionary<object, T> _map = new Dictionary<object, T>();
