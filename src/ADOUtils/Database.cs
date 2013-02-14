@@ -143,32 +143,53 @@ namespace ADOUtils
 			return new Command(cmd, conn);
 		}
 
+		[Obsolete("Use Query(...).AsDisconnected().ToList() instead.")]
 		public virtual IEnumerable<IDataRecord> Read(string sql)
 		{
-			return Read(sql, new Dictionary<string, object>(0));
+			return Query(sql, new Dictionary<string, object>(0)).AsDisconnected().ToList();
 		}
 
+		[Obsolete("Use Query(...).AsDisconnected().ToList() instead.")]
 		public virtual IEnumerable<IDataRecord> Read(string sql, object parameters)
 		{
-			return Read(sql, ToDictionary(parameters));
+			return Query(sql, ToDictionary(parameters)).AsDisconnected().ToList();
 		}
 
+		[Obsolete("Use Query(...).AsDisconnected().ToList() instead.")]
 		public virtual IEnumerable<IDataRecord> Read(string sql, IDictionary<string, object> parameters)
 		{
-			return Yield(sql, parameters).AsDisconnected().ToList();
+			return Query(sql, parameters).AsDisconnected().ToList();
 		}
 
+		[Obsolete("Use Query(...) method instead.")]
 		public virtual IEnumerable<IDataRecord> Yield(string sql, object parameters)
 		{
-			return Yield(sql, ToDictionary(parameters));
+			return Query(sql, ToDictionary(parameters));
 		}
 
+		[Obsolete("Use Query(...) method instead.")]
 		public virtual IEnumerable<IDataRecord> Yield(string sql)
 		{
-			return Yield(sql, new Dictionary<string, object>(0));
+			return Query(sql, new Dictionary<string, object>(0));
 		}
 
+		[Obsolete("Use Query(...) method instead.")]
 		public virtual IEnumerable<IDataRecord> Yield(string sql, IDictionary<string, object> parameters)
+		{
+			return Query(sql, parameters);
+		}
+
+		public virtual IEnumerable<IDataRecord> Query(string sql, object parameters)
+		{
+			return Query(sql, ToDictionary(parameters));
+		}
+
+		public virtual IEnumerable<IDataRecord> Query(string sql)
+		{
+			return Query(sql, new Dictionary<string, object>(0));
+		}
+
+		public virtual IEnumerable<IDataRecord> Query(string sql, IDictionary<string, object> parameters)
 		{
 			using(var cmd = CreateCommand())
 			{

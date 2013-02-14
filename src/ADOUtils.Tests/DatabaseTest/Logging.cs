@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using NUnit.Framework;
 using SharpTestsEx;
+using System.Linq;
 
 namespace ADOUtils.Tests.DatabaseTest
 {
@@ -80,7 +82,7 @@ namespace ADOUtils.Tests.DatabaseTest
 			using (_target.OpenConnection())
 			{
 				_logs.Clear();
-				_target.Read("SELECT @Par AS P", new { Par = "hello" });
+				_target.Query("SELECT @Par AS P", new {Par = "hello"}).ToList();
 
 				_logs.Should().Have.SameSequenceAs(new[] {
 					"Executing reader: `SELECT @Par AS P` { Par = `hello` }",
@@ -112,7 +114,7 @@ namespace ADOUtils.Tests.DatabaseTest
 			{
 				using(var tx = db.BeginTransaction())
 				{
-					db.Read("SELECT 1");
+					db.Query("SELECT 1").ToList();
 					db.Scalar<int>("SELECT 1");
 					db.Exec("SELECT 1");
 					tx.Commit();

@@ -16,7 +16,7 @@ namespace ADOUtils.Tests
 			var db = new Database(TestUtils.ConnStr);
 			using (db.OpenConnection())
 			{
-				_target = db.Yield("SELECT 1 AS Id, 'row 1' AS Name, 'row 1 2' AS Name").Select(DisconnectedDataRecord.Build).First();
+				_target = db.Query("SELECT 1 AS Id, 'row 1' AS Name, 'row 1 2' AS Name").AsDisconnected().First();
 			}
 		}
 
