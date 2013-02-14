@@ -4,11 +4,11 @@ using System.Data;
 
 namespace ADOUtils
 {
-	internal class CachedDataRecord : IDataRecord
+	internal class DisconnectedDataRecord : IDataRecord
 	{
 		private readonly IDictionary<string, object> _row;
 
-		public CachedDataRecord(IDictionary<string, object> row)
+		public DisconnectedDataRecord(IDictionary<string, object> row)
 		{
 			_row = row;
 		}
@@ -153,7 +153,7 @@ namespace ADOUtils
 					row.Add(name, rec[i]);
 				}
 			}
-			return new CachedDataRecord(row);
+			return new DisconnectedDataRecord(row);
 		}
 	}
 }

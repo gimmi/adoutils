@@ -155,7 +155,7 @@ namespace ADOUtils
 
 		public virtual IEnumerable<IDataRecord> Read(string sql, IDictionary<string, object> parameters)
 		{
-			return Yield(sql, parameters).Select(CachedDataRecord.Build).ToList();
+			return Yield(sql, parameters).AsDisconnected().ToList();
 		}
 
 		public virtual IEnumerable<IDataRecord> Yield(string sql, object parameters)

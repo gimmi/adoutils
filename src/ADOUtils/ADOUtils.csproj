@@ -40,7 +40,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CachedDataRecord.cs" />
+    <Compile Include="DisconnectedDataRecord.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Connection.cs" />
     <Compile Include="Database.cs" />

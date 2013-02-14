@@ -55,7 +55,7 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CachedDataRecordTest.cs" />
+    <Compile Include="DisconnectedDataRecordTest.cs" />
     <Compile Include="DatabaseTest\BasicOperation.cs" />
     <Compile Include="DatabaseTest\Logging.cs" />
     <Compile Include="DatabaseTest\TransactionManagement.cs" />
