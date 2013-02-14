@@ -45,6 +45,7 @@
     <Compile Include="Connection.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DbFieldConversionUtils.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="IConnection.cs" />
     <Compile Include="IDatabase.cs" />
