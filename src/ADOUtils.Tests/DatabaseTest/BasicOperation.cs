@@ -198,5 +198,16 @@ CREATE TABLE TblWithStrangeDataType(DateValue datetime2 NULL)
 				DateValue = new SqlParameter { DbType = DbType.DateTime2, Value = DateTime.MinValue }
 			}).Should().Be.EqualTo(1);
 		}
+
+		[Test]
+		public void Should_convert_null_parameters_to_dbnull()
+		{
+			var affectedRows = _target.Exec("INSERT INTO Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(@IntValue, @StringValue, @DateValue, @GuidValue)", new {
+				IntValue = (int?) null, StringValue = (string) null, DateValue = (DateTime?) null, GuidValue = (Guid?) null
+			});
+
+			affectedRows.Should().Be.EqualTo(1);
+			var rec = _target.Scalar<int>("SELECT COUNT(*) FROM Tbl WHERE IntValue IS NULL AND StringValue IS NULL AND DateValue IS NULL AND GuidValue IS NULL").Should().Be.EqualTo(1);
+		}
 	}
 }
