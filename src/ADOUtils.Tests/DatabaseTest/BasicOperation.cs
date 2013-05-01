@@ -207,7 +207,7 @@ CREATE TABLE TblWithStrangeDataType(DateValue datetime2 NULL)
 			});
 
 			affectedRows.Should().Be.EqualTo(1);
-			var rec = _target.Scalar<int>("SELECT COUNT(*) FROM Tbl WHERE IntValue IS NULL AND StringValue IS NULL AND DateValue IS NULL AND GuidValue IS NULL").Should().Be.EqualTo(1);
+			_target.Scalar<int>("SELECT COUNT(*) FROM Tbl WHERE IntValue IS NULL AND StringValue IS NULL AND DateValue IS NULL AND GuidValue IS NULL").Should().Be.EqualTo(1);
 		}
 	}
 }
