@@ -15,8 +15,10 @@ namespace ADOUtils.Tests
 		 * SQL Server 2012 express LocalDB
 		 * http://support.microsoft.com/kb/2544514
 		 */
-		private const string ConnStrTemplate = @"Server=(localdb)\v11.0;Integrated Security=true;Initial Catalog={0}";
-		private const string DBName = "ADOUtilsTests";
+		public const string DBName = "ADOUtilsTests";
+		public const string Server = @"(localdb)\v11.0";
+		private const string SqlServerConnStrTemplate = @"Server={0};Integrated Security=true;Initial Catalog={1}";
+		private const string OdbcConnStrTemplate = @"Driver={{SQL Server Native Client 11.0}};Server={0};Database={1};Trusted_Connection=yes";
 
 		public static void CreateTestDb()
 		{
@@ -25,14 +27,19 @@ namespace ADOUtils.Tests
 			Execute("CREATE DATABASE ADOUtilsTests", "master");
 		}
 
-		public static string ConnStr
+		public static string SqlServerConnStr
 		{
-			get { return string.Format(ConnStrTemplate, DBName); }
+			get { return string.Format(SqlServerConnStrTemplate, Server, DBName); }
+		}
+
+		public static string OdbcConnStr
+		{
+			get { return string.Format(OdbcConnStrTemplate, Server, DBName); }
 		}
 
 		public static void Execute(string sql, string dbName = DBName)
 		{
-			var conn = new SqlConnection(string.Format(ConnStrTemplate, dbName));
+			var conn = new SqlConnection(string.Format(SqlServerConnStrTemplate, Server, dbName));
 			conn.Open();
 			try
 			{

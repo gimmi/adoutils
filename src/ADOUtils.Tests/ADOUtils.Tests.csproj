@@ -61,6 +61,7 @@
     <Compile Include="DatabaseTest\TransactionManagement.cs" />
     <Compile Include="DbFieldConversionUtilsTest.cs" />
     <Compile Include="IdentityMapTest.cs" />
+    <Compile Include="OdbcProviderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUtils.cs" />
     <Compile Include="TransactionTest.cs" />

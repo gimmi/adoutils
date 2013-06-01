@@ -18,7 +18,7 @@ namespace ADOUtils.Tests.DatabaseTest
 		{
 			TestUtils.CreateTestDb();
 			_logs = new List<string>();
-			_target = new Database(TestUtils.ConnStr, DbProviderFactories.GetFactory("System.Data.SqlClient"), s => _logs.Add(s));
+			_target = new Database(TestUtils.SqlServerConnStr, DbProviderFactories.GetFactory("System.Data.SqlClient"), s => _logs.Add(s));
 		}
 
 		[Test]
@@ -108,7 +108,7 @@ namespace ADOUtils.Tests.DatabaseTest
 		[Test]
 		public void Should_work_when_no_logger_defined()
 		{
-			var db = new Database(TestUtils.ConnStr);
+			var db = new Database(TestUtils.SqlServerConnStr);
 
 			using (db.OpenConnection())
 			{

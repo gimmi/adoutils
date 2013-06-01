@@ -15,7 +15,7 @@ namespace ADOUtils.Tests.DatabaseTest
 			TestUtils.CreateTestDb();
 			TestUtils.Execute(@"CREATE TABLE Tbl(IntValue int NULL)");
 
-			_target = new Database(TestUtils.ConnStr);
+			_target = new Database(TestUtils.SqlServerConnStr);
 		}
 
 		[TearDown]
