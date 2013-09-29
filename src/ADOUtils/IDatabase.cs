@@ -15,9 +15,7 @@ namespace ADOUtils
 		int Exec(string sql, object parameters);
 		int Exec(string sql, IDictionary<string, object> parameters);
 		ICommand CreateCommand();
-		IEnumerable<IDataRecord> Query(string sql);
-		IEnumerable<IDataRecord> Query(string sql, object parameters);
-		IEnumerable<IDataRecord> Query(string sql, IDictionary<string, object> parameters);
+		IEnumerable<IDataRecord> Query(string sql, object parameters = null);
 
 		[Obsolete("Use Query(...).AsDisconnected().ToList() instead.")]
 		IEnumerable<IDataRecord> Read(string sql);

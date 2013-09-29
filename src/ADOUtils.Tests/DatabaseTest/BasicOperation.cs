@@ -45,6 +45,27 @@ INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2
 		}
 
 		[Test]
+		public void Should_query()
+		{
+			_target.Query("SELECT StringValue FROM Tbl WHERE IntValue = @IntValue", new Dictionary<string, object> { { "IntValue", 2 } }).Select(x => x["StringValue"]).First().Should().Be.EqualTo("string 2");
+			_target.Query("SELECT StringValue FROM Tbl WHERE IntValue = @IntValue", new { IntValue = 2 }).Select(x => x["StringValue"]).First().Should().Be.EqualTo("string 2");
+			_target.Query("SELECT StringValue FROM Tbl WHERE IntValue = 2").Select(x => x["StringValue"]).First().Should().Be.EqualTo("string 2");
+		}
+
+		[Test]
+		public void Should_use_dictionary_values_as_parameters()
+		{
+			IDictionary<string, object> parameters = new Dictionary<string, object> { { "IntValue", 2 } };
+			_target.Query("SELECT StringValue FROM Tbl WHERE IntValue = @IntValue", parameters).Select(x => x["StringValue"]).First().Should().Be.EqualTo("string 2");
+		}
+
+		[Test]
+		public void Should_tolerate_null_parameters()
+		{
+			_target.Query("SELECT StringValue FROM Tbl WHERE IntValue = 2", null).Select(x => x["StringValue"]).First().Should().Be.EqualTo("string 2");
+		}
+
+		[Test]
 		public void Should_query_scalar()
 		{
 			_target.Scalar<int>("SELECT COUNT(*) FROM Tbl").Should().Be.EqualTo(2);

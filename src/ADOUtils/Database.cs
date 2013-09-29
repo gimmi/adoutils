@@ -179,17 +179,12 @@ namespace ADOUtils
 			return Query(sql, parameters);
 		}
 
-		public virtual IEnumerable<IDataRecord> Query(string sql, object parameters)
+		public virtual IEnumerable<IDataRecord> Query(string sql, object parameters = null)
 		{
 			return Query(sql, ToDictionary(parameters));
 		}
 
-		public virtual IEnumerable<IDataRecord> Query(string sql)
-		{
-			return Query(sql, new Dictionary<string, object>(0));
-		}
-
-		public virtual IEnumerable<IDataRecord> Query(string sql, IDictionary<string, object> parameters)
+		private IEnumerable<IDataRecord> Query(string sql, IDictionary<string, object> parameters)
 		{
 			using(var cmd = CreateCommand())
 			{
@@ -263,7 +258,7 @@ namespace ADOUtils
 
 		private static IDictionary<string, object> ToDictionary(object o)
 		{
-			return TypeDescriptor.GetProperties(o).Cast<PropertyDescriptor>().ToDictionary(p => p.Name, p => p.GetValue(o));
+			return o as IDictionary<string, object> ?? TypeDescriptor.GetProperties(o).Cast<PropertyDescriptor>().ToDictionary(p => p.Name, p => p.GetValue(o));
 		}
 
 		public void Dispose()
