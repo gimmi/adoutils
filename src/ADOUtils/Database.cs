@@ -213,17 +213,12 @@ namespace ADOUtils
 			return string.Concat("`", sql , "` { ", string.Join(", ", parameters.Select(kv => string.Concat(kv.Key, " = `", kv.Value, "`"))), " }");
 		}
 
-		public virtual int Exec(string sql)
-		{
-			return Exec(sql, new Dictionary<string, object>(0));
-		}
-
-		public virtual int Exec(string sql, object parameters)
+		public virtual int Exec(string sql, object parameters = null)
 		{
 			return Exec(sql, ToDictionary(parameters));
 		}
 
-		public virtual int Exec(string sql, IDictionary<string, object> parameters)
+		private int Exec(string sql, IDictionary<string, object> parameters)
 		{
 			using(var cmd = CreateCommand())
 			{

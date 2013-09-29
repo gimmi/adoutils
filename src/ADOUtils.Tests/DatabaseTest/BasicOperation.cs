@@ -62,7 +62,7 @@ INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2
 		[Test]
 		public void Should_tolerate_null_parameters()
 		{
-			_target.Query("SELECT StringValue FROM Tbl WHERE IntValue = 2", null).Select(x => x["StringValue"]).First().Should().Be.EqualTo("string 2");
+			_target.Query("SELECT StringValue FROM Tbl WHERE IntValue = 2").Select(x => x["StringValue"]).First().Should().Be.EqualTo("string 2");
 		}
 
 		[Test]
@@ -85,6 +85,7 @@ INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2
 		public void Should_exec()
 		{
 			_target.Exec("UPDATE Tbl SET StringValue = StringValue").Should().Be.EqualTo(2);
+			_target.Exec("UPDATE Tbl SET StringValue = StringValue WHERE 1 = @par", new Dictionary<string, object> { { "par", 2 } }).Should().Be.EqualTo(0);
 			_target.Exec("UPDATE Tbl SET StringValue = StringValue WHERE 1 = @par", new { par = 2 }).Should().Be.EqualTo(0);
 		}
 
