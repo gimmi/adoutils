@@ -18,6 +18,9 @@ namespace ADOUtils
 
 		public Database(string connStr) : this(connStr, DbProviderFactories.GetFactory("System.Data.SqlClient"), null) {}
 
+		public Database(string connStr, DbProviderFactory factory) : this(connStr, factory, null) {}
+
+		[Obsolete("ADOUtils logging support will be removed in future versions, so dont use it anymore.")]
 		public Database(string connStr, DbProviderFactory factory, Action<string> log)
 		{
 			_factory = factory;
