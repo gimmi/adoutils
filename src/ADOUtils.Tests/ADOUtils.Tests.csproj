@@ -57,10 +57,8 @@
   <ItemGroup>
     <Compile Include="DisconnectedDataRecordTest.cs" />
     <Compile Include="DatabaseTest\BasicOperation.cs" />
-    <Compile Include="DatabaseTest\Logging.cs" />
     <Compile Include="DatabaseTest\TransactionManagement.cs" />
     <Compile Include="DbFieldConversionUtilsTest.cs" />
-    <Compile Include="IdentityMapTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUtils.cs" />
     <Compile Include="TransactionTest.cs" />

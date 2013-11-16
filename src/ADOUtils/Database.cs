@@ -10,21 +10,16 @@ namespace ADOUtils
 	public class Database : IDatabase
 	{
 		private readonly DbProviderFactory _factory;
-		private readonly Action<string> _log;
 		private readonly string _connStr;
 		private IDbConnection _conn;
 		private IDbTransaction _tr;
 		private bool _nestedTransactionRollback;
 
-		public Database(string connStr) : this(connStr, DbProviderFactories.GetFactory("System.Data.SqlClient"), null) {}
+		public Database(string connStr) : this(connStr, DbProviderFactories.GetFactory("System.Data.SqlClient")) {}
 
-		public Database(string connStr, DbProviderFactory factory) : this(connStr, factory, null) {}
-
-		[Obsolete("ADOUtils logging support will be removed in future versions, so dont use it anymore.")]
-		public Database(string connStr, DbProviderFactory factory, Action<string> log)
+		public Database(string connStr, DbProviderFactory factory)
 		{
 			_factory = factory;
-			_log = log;
 			_connStr = connStr;
 		}
 
@@ -33,10 +28,6 @@ namespace ADOUtils
 			if(_conn != null)
 			{
 				return new Connection();
-			}
-			if(_log != null)
-			{
-				_log.Invoke("Opening connection");
 			}
 			DbConnection conn = _factory.CreateConnection();
 			conn.ConnectionString = _connStr;
@@ -49,10 +40,6 @@ namespace ADOUtils
 		{
 			if(_conn != null)
 			{
-				if(_log != null)
-				{
-					_log.Invoke("Closing connection");
-				}
 				IDbConnection conn = _conn;
 				_conn = null;
 				conn.Close();
@@ -65,10 +52,6 @@ namespace ADOUtils
 			if (_tr != null)
 			{
 				return new Transaction(connection, delegate { }, NotifyNestedTransactionRollback);
-			}
-			if (_log != null)
-			{
-				_log.Invoke("Beginning transaction");
 			}
 			_tr = _conn.BeginTransaction();
 			_nestedTransactionRollback = false;
@@ -89,10 +72,6 @@ namespace ADOUtils
 					RollbackTransaction();
 					throw new DataException("Cannot commit transaction when one of the nested transaction has been rolled back");
 				}
-				if (_log != null)
-				{
-					_log.Invoke("Committing transaction");
-				}
 				IDbTransaction tr = _tr;
 				_tr = null;
 				tr.Commit();
@@ -103,10 +82,6 @@ namespace ADOUtils
 		{
 			if(_tr != null)
 			{
-				if (_log != null)
-				{
-					_log.Invoke("Rolling back transaction");
-				}
 				IDbTransaction tr = _tr;
 				_tr = null;
 				tr.Rollback();
@@ -127,10 +102,6 @@ namespace ADOUtils
 		{
 			using (var cmd = CreateCommand())
 			{
-				if (_log != null)
-				{
-					_log.Invoke(string.Concat("Executing scalar: ", SqlToString(sql, parameters)));
-				}
 				cmd.DbCommand.CommandText = sql;
 				AddParameters(cmd.DbCommand, parameters);
 				object res = cmd.DbCommand.ExecuteScalar();
@@ -146,42 +117,6 @@ namespace ADOUtils
 			return new Command(cmd, conn);
 		}
 
-		[Obsolete("Use Query(...).AsDisconnected().ToList() instead.")]
-		public virtual IEnumerable<IDataRecord> Read(string sql)
-		{
-			return Query(sql, new Dictionary<string, object>(0)).AsDisconnected().ToList();
-		}
-
-		[Obsolete("Use Query(...).AsDisconnected().ToList() instead.")]
-		public virtual IEnumerable<IDataRecord> Read(string sql, object parameters)
-		{
-			return Query(sql, ToDictionary(parameters)).AsDisconnected().ToList();
-		}
-
-		[Obsolete("Use Query(...).AsDisconnected().ToList() instead.")]
-		public virtual IEnumerable<IDataRecord> Read(string sql, IDictionary<string, object> parameters)
-		{
-			return Query(sql, parameters).AsDisconnected().ToList();
-		}
-
-		[Obsolete("Use Query(...) method instead.")]
-		public virtual IEnumerable<IDataRecord> Yield(string sql, object parameters)
-		{
-			return Query(sql, ToDictionary(parameters));
-		}
-
-		[Obsolete("Use Query(...) method instead.")]
-		public virtual IEnumerable<IDataRecord> Yield(string sql)
-		{
-			return Query(sql, new Dictionary<string, object>(0));
-		}
-
-		[Obsolete("Use Query(...) method instead.")]
-		public virtual IEnumerable<IDataRecord> Yield(string sql, IDictionary<string, object> parameters)
-		{
-			return Query(sql, parameters);
-		}
-
 		public virtual IEnumerable<IDataRecord> Query(string sql, object parameters = null)
 		{
 			return Query(sql, ToDictionary(parameters));
@@ -191,10 +126,6 @@ namespace ADOUtils
 		{
 			using(var cmd = CreateCommand())
 			{
-				if (_log != null)
-				{
-					_log.Invoke(string.Concat("Executing reader: ", SqlToString(sql, parameters)));
-				}
 				cmd.DbCommand.CommandText = sql;
 				AddParameters(cmd.DbCommand, parameters);
 				using (IDataReader rdr = cmd.DbCommand.ExecuteReader())
@@ -203,17 +134,8 @@ namespace ADOUtils
 					{
 						yield return rdr;
 					}
-					if (_log != null)
-					{
-						_log.Invoke(string.Concat("Closing reader: ", SqlToString(sql, parameters)));
-					}
 				}
 			}
-		}
-
-		private string SqlToString(string sql, IEnumerable<KeyValuePair<string, object>> parameters)
-		{
-			return string.Concat("`", sql , "` { ", string.Join(", ", parameters.Select(kv => string.Concat(kv.Key, " = `", kv.Value, "`"))), " }");
 		}
 
 		public virtual int Exec(string sql, object parameters = null)
@@ -225,10 +147,6 @@ namespace ADOUtils
 		{
 			using(var cmd = CreateCommand())
 			{
-				if (_log != null)
-				{
-					_log.Invoke(string.Concat("Executing: ", SqlToString(sql, parameters)));
-				}
 				cmd.DbCommand.CommandText = sql;
 				AddParameters(cmd.DbCommand, parameters);
 				return cmd.DbCommand.ExecuteNonQuery();

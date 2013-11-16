@@ -29,22 +29,6 @@ INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2
 		}
 
 		[Test]
-		public void Should_query_with_yield()
-		{
-			_target.Yield("SELECT StringValue FROM Tbl WHERE IntValue = @IntValue", new Dictionary<string, object> { { "IntValue", 2 } }).Select(x => x.GetString(0)).First().Should().Be.EqualTo("string 2");
-			_target.Yield("SELECT StringValue FROM Tbl WHERE IntValue = @IntValue", new { IntValue = 2 }).Select(x => x.GetString(0)).First().Should().Be.EqualTo("string 2");
-			_target.Yield("SELECT StringValue FROM Tbl WHERE IntValue = 2").Select(x => x.GetString(0)).First().Should().Be.EqualTo("string 2");
-		}
-
-		[Test]
-		public void Should_query_with_read()
-		{
-			_target.Read("SELECT StringValue FROM Tbl WHERE IntValue = @IntValue", new Dictionary<string, object> { { "IntValue", 2 } }).Select(x => x["StringValue"]).First().Should().Be.EqualTo("string 2");
-			_target.Read("SELECT StringValue FROM Tbl WHERE IntValue = @IntValue", new { IntValue = 2 }).Select(x => x["StringValue"]).First().Should().Be.EqualTo("string 2");
-			_target.Read("SELECT StringValue FROM Tbl WHERE IntValue = 2").Select(x => x["StringValue"]).First().Should().Be.EqualTo("string 2");
-		}
-
-		[Test]
 		public void Should_query()
 		{
 			_target.Query("SELECT StringValue FROM Tbl WHERE IntValue = @IntValue", new Dictionary<string, object> { { "IntValue", 2 } }).Select(x => x["StringValue"]).First().Should().Be.EqualTo("string 2");
@@ -92,7 +76,7 @@ INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2
 		[Test]
 		public void Should_pass_and_read_various_datatypes_as_expected()
 		{
-			var actual = _target.Yield("SELECT * FROM Tbl WHERE IntValue = @IntValue AND StringValue = @StringValue AND DateValue = @DateValue AND GuidValue = @GuidValue", new {
+			var actual = _target.Query("SELECT * FROM Tbl WHERE IntValue = @IntValue AND StringValue = @StringValue AND DateValue = @DateValue AND GuidValue = @GuidValue", new {
 				IntValue = 1, StringValue = "string 1", DateValue = new DateTime(2012, 6, 9, 18, 33, 0), GuidValue = new Guid("A71C8E84-B1A1-4CED-81B7-F551704A33E7")
 			}).Select(r => new {
 				IntValue = r["IntValue"], StringValue = r["StringValue"], DateValue = r["DateValue"], GuidValue = r["GuidValue"]
@@ -170,7 +154,7 @@ AS BEGIN
 END
 ");
 
-			var actual = _target.Yield("EXEC SP @Param1, @Param2", new { Param1 = "p1", Param2 = 2 }).Select(r => new {
+			var actual = _target.Query("EXEC SP @Param1, @Param2", new { Param1 = "p1", Param2 = 2 }).Select(r => new {
 				Param1 = r["Param1"],
 				Param2 = r["Param2"]
 			}).Single();
