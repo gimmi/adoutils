@@ -88,22 +88,12 @@ namespace ADOUtils
 			}
 		}
 
-		public virtual T Scalar<T>(string sql, object parameters)
+		public virtual T Scalar<T>(string sql, object parameters = null)
 		{
-			return Scalar<T>(sql, ToDictionary(parameters));
-		}
-
-		public virtual T Scalar<T>(string sql)
-		{
-			return Scalar<T>(sql, new Dictionary<string, object>(0));
-		}
-
-		public virtual T Scalar<T>(string sql, IDictionary<string, object> parameters)
-		{
-			using (var cmd = CreateCommand())
+            using (var cmd = CreateCommand())
 			{
 				cmd.DbCommand.CommandText = sql;
-				AddParameters(cmd.DbCommand, parameters);
+                AddParameters(cmd.DbCommand, ToDictionary(parameters));
 				object res = cmd.DbCommand.ExecuteScalar();
 				return DbFieldConversionUtils.Convert<T>(res);
 			}
@@ -119,15 +109,10 @@ namespace ADOUtils
 
 		public virtual IEnumerable<IDataRecord> Query(string sql, object parameters = null)
 		{
-			return Query(sql, ToDictionary(parameters));
-		}
-
-		private IEnumerable<IDataRecord> Query(string sql, IDictionary<string, object> parameters)
-		{
-			using(var cmd = CreateCommand())
+            using(var cmd = CreateCommand())
 			{
 				cmd.DbCommand.CommandText = sql;
-				AddParameters(cmd.DbCommand, parameters);
+				AddParameters(cmd.DbCommand, ToDictionary(parameters));
 				using (IDataReader rdr = cmd.DbCommand.ExecuteReader())
 				{
 					while(rdr.Read())
@@ -140,20 +125,15 @@ namespace ADOUtils
 
 		public virtual int Exec(string sql, object parameters = null)
 		{
-			return Exec(sql, ToDictionary(parameters));
+		    using(var cmd = CreateCommand())
+		    {
+		        cmd.DbCommand.CommandText = sql;
+		        AddParameters(cmd.DbCommand, ToDictionary(parameters));
+		        return cmd.DbCommand.ExecuteNonQuery();
+		    }
 		}
 
-		private int Exec(string sql, IDictionary<string, object> parameters)
-		{
-			using(var cmd = CreateCommand())
-			{
-				cmd.DbCommand.CommandText = sql;
-				AddParameters(cmd.DbCommand, parameters);
-				return cmd.DbCommand.ExecuteNonQuery();
-			}
-		}
-
-		private static void AddParameters(IDbCommand cmd, IEnumerable<KeyValuePair<string, object>> parameters)
+	    private static void AddParameters(IDbCommand cmd, IEnumerable<KeyValuePair<string, object>> parameters)
 		{
 			foreach(var pi in parameters)
 			{
