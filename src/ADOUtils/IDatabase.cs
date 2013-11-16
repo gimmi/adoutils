@@ -8,9 +8,9 @@ namespace ADOUtils
 	{
 		IConnection OpenConnection();
 		ITransaction BeginTransaction();
-        ICommand CreateCommand();
-        T Scalar<T>(string sql, object parameters = null);
-		int Exec(string sql, object parameters = null);
-		IEnumerable<IDataRecord> Query(string sql, object parameters = null);
+		ICommand CreateCommand(int? timeout = null);
+		T Scalar<T>(string sql, object parameters = null, int? timeout = null);
+		int Exec(string sql, object parameters = null, int? timeout = null);
+		IEnumerable<IDataRecord> Query(string sql, object parameters = null, int? timeout = null);
 	}
 }

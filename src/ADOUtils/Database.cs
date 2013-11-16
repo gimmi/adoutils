@@ -88,28 +88,32 @@ namespace ADOUtils
 			}
 		}
 
-		public virtual T Scalar<T>(string sql, object parameters = null)
+		public virtual T Scalar<T>(string sql, object parameters = null, int? timeout = null)
 		{
-            using (var cmd = CreateCommand())
+			using (var cmd = CreateCommand(timeout))
 			{
 				cmd.DbCommand.CommandText = sql;
-                AddParameters(cmd.DbCommand, ToDictionary(parameters));
+				AddParameters(cmd.DbCommand, ToDictionary(parameters));
 				object res = cmd.DbCommand.ExecuteScalar();
 				return DbFieldConversionUtils.Convert<T>(res);
 			}
 		}
 
-		public virtual ICommand CreateCommand()
+		public virtual ICommand CreateCommand(int? timeout = null)
 		{
 			IConnection conn = OpenConnection();
 			IDbCommand cmd = _conn.CreateCommand();
 			cmd.Transaction = _tr;
+			if (timeout.HasValue)
+			{
+				cmd.CommandTimeout = timeout.Value;
+			}
 			return new Command(cmd, conn);
 		}
 
-		public virtual IEnumerable<IDataRecord> Query(string sql, object parameters = null)
+		public virtual IEnumerable<IDataRecord> Query(string sql, object parameters = null, int? timeout = null)
 		{
-            using(var cmd = CreateCommand())
+			using(var cmd = CreateCommand(timeout))
 			{
 				cmd.DbCommand.CommandText = sql;
 				AddParameters(cmd.DbCommand, ToDictionary(parameters));
@@ -123,17 +127,17 @@ namespace ADOUtils
 			}
 		}
 
-		public virtual int Exec(string sql, object parameters = null)
+		public virtual int Exec(string sql, object parameters = null, int? timeout = null)
 		{
-		    using(var cmd = CreateCommand())
-		    {
-		        cmd.DbCommand.CommandText = sql;
-		        AddParameters(cmd.DbCommand, ToDictionary(parameters));
-		        return cmd.DbCommand.ExecuteNonQuery();
-		    }
+			using (ICommand cmd = CreateCommand(timeout))
+			{
+				cmd.DbCommand.CommandText = sql;
+				AddParameters(cmd.DbCommand, ToDictionary(parameters));
+				return cmd.DbCommand.ExecuteNonQuery();
+			}
 		}
 
-	    private static void AddParameters(IDbCommand cmd, IEnumerable<KeyValuePair<string, object>> parameters)
+		private static void AddParameters(IDbCommand cmd, IEnumerable<KeyValuePair<string, object>> parameters)
 		{
 			foreach(var pi in parameters)
 			{

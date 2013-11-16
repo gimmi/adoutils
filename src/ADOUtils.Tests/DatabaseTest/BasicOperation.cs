@@ -215,5 +215,30 @@ CREATE TABLE TblWithStrangeDataType(DateValue datetime2 NULL)
 			affectedRows.Should().Be.EqualTo(1);
 			_target.Scalar<int>("SELECT COUNT(*) FROM Tbl WHERE IntValue IS NULL AND StringValue IS NULL AND DateValue IS NULL AND GuidValue IS NULL").Should().Be.EqualTo(1);
 		}
+
+		[Test]
+		public void Should_respect_command_timeout()
+		{
+			using (ICommand cmd = _target.CreateCommand(1))
+			{
+				cmd.DbCommand.CommandText = @"WAITFOR DELAY '00:00:02'";
+				Executing.This(() => cmd.DbCommand.ExecuteNonQuery())
+					.Should().Throw<SqlException>()
+					.And.Exception.Number.Should().Be.EqualTo(-2);
+			}
+
+
+			Executing.This(() => _target.Query(@"WAITFOR DELAY '00:00:02'", timeout: 1).ToList())
+				.Should().Throw<SqlException>()
+				.And.Exception.Number.Should().Be.EqualTo(-2);
+
+			Executing.This(() => _target.Exec(@"WAITFOR DELAY '00:00:02'", timeout: 1))
+				.Should().Throw<SqlException>()
+				.And.Exception.Number.Should().Be.EqualTo(-2);
+
+			Executing.This(() => _target.Scalar<int>(@"WAITFOR DELAY '00:00:02'", timeout: 1))
+				.Should().Throw<SqlException>()
+				.And.Exception.Number.Should().Be.EqualTo(-2);
+		}
 	}
 }
