@@ -39,6 +39,14 @@ task('build', [ 'dependencies', 'assemblyinfo' ], function () {
 });
 
 task('test', 'build', function () {
+	jsmake.Sys.createRunner(dotnet._nugetPath)
+		.args('install', 'NUnit.Runners')
+		.args('-Version', '2.6.3')
+		.args('-OutputDirectory', 'tools')
+		.run();
+
+	dotnet._nunitPath = 'tools/NUnit.Runners.2.6.3/tools/nunit-console.exe';
+
 	var testDlls = fs.createScanner('src').include('*.Tests/bin/Debug/*.Tests.dll').scan();
 	dotnet.runNUnit(testDlls);
 });

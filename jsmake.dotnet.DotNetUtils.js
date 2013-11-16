@@ -62,6 +62,9 @@ jsmake.dotnet.DotNetUtils.prototype = {
 		jsmake.Fs.writeFile(path, rows.join('\n'));
 	},
 	runNUnit: function (dllPaths) {
-		jsmake.Sys.createRunner(this._nunitPath).args('/nologo', dllPaths).run();
+		jsmake.Sys.createRunner(this._nunitPath)
+			.args('/framework=' + this._frameworkVersion)
+			.args('/nologo', dllPaths)
+			.run();
 	}
 };

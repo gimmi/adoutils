@@ -15,3 +15,4 @@ src/_ReSharper.*
 /TestResult.xml
 /build/
 /src/SharedAssemblyInfo.cs
+/tools/NUnit.Runners.*/
