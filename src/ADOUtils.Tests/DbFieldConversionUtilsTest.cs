@@ -82,5 +82,21 @@ namespace ADOUtils.Tests
 			DbFieldConversionUtils.Convert<Int32>((UInt16)5).Should().Be.EqualTo(5);
 			DbFieldConversionUtils.Convert<Double>(5).Should().Be.EqualTo(5);
 		}
+
+		[Test]
+		public void Should_convert_char()
+		{
+			DbFieldConversionUtils.Convert<char>(DBNull.Value).Should().Be.EqualTo('\0');
+			DbFieldConversionUtils.Convert<char>(null).Should().Be.EqualTo('\0');
+			DbFieldConversionUtils.Convert<char>('A').Should().Be.EqualTo('A');
+			DbFieldConversionUtils.Convert<char>("A").Should().Be.EqualTo('A');
+			DbFieldConversionUtils.Convert<char>(0).Should().Be.EqualTo('\0');
+			Executing.This(() => DbFieldConversionUtils.Convert<char>("AA")).Should().Throw<FormatException>()
+				.And.Exception.Message.Should().Contain("String must be exactly one character long.");
+
+			DbFieldConversionUtils.Convert<char?>(DBNull.Value).Should().Not.Have.Value();
+			DbFieldConversionUtils.Convert<char?>(null).Should().Not.Have.Value();
+			DbFieldConversionUtils.Convert<char?>("A").Should().Be.EqualTo('A');
+		}
 	}
 }
