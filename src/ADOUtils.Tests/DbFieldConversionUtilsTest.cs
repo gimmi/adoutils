@@ -93,6 +93,8 @@ namespace ADOUtils.Tests
 			DbFieldConversionUtils.Convert<char>(0).Should().Be.EqualTo('\0');
 			Executing.This(() => DbFieldConversionUtils.Convert<char>("AA")).Should().Throw<FormatException>()
 				.And.Exception.Message.Should().Contain("String must be exactly one character long.");
+			Executing.This(() => DbFieldConversionUtils.Convert<char>("")).Should().Throw<FormatException>()
+				.And.Exception.Message.Should().Contain("String must be exactly one character long.");
 
 			DbFieldConversionUtils.Convert<char?>(DBNull.Value).Should().Not.Have.Value();
 			DbFieldConversionUtils.Convert<char?>(null).Should().Not.Have.Value();
