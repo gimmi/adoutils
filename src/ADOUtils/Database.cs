@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
 
 namespace ADOUtils
 {
@@ -93,7 +90,7 @@ namespace ADOUtils
 			using (var cmd = CreateCommand(timeout))
 			{
 				cmd.DbCommand.CommandText = sql;
-				AddParameters(cmd.DbCommand, ToDictionary(parameters));
+				cmd.DbCommand.AddPars(parameters);
 				object res = cmd.DbCommand.ExecuteScalar();
 				return DbFieldConversionUtils.Convert<T>(res);
 			}
@@ -116,7 +113,7 @@ namespace ADOUtils
 			using(var cmd = CreateCommand(timeout))
 			{
 				cmd.DbCommand.CommandText = sql;
-				AddParameters(cmd.DbCommand, ToDictionary(parameters));
+				cmd.DbCommand.AddPars(parameters);
 				using (IDataReader rdr = cmd.DbCommand.ExecuteReader())
 				{
 					while(rdr.Read())
@@ -132,33 +129,9 @@ namespace ADOUtils
 			using (ICommand cmd = CreateCommand(timeout))
 			{
 				cmd.DbCommand.CommandText = sql;
-				AddParameters(cmd.DbCommand, ToDictionary(parameters));
+				cmd.DbCommand.AddPars(parameters);
 				return cmd.DbCommand.ExecuteNonQuery();
 			}
-		}
-
-		private static void AddParameters(IDbCommand cmd, IEnumerable<KeyValuePair<string, object>> parameters)
-		{
-			foreach(var pi in parameters)
-			{
-				IDataParameter par;
-				if (pi.Value is IDataParameter)
-				{
-					par = pi.Value as IDataParameter;
-				}
-				else
-				{
-					par = cmd.CreateParameter();
-					par.Value = pi.Value ?? DBNull.Value;
-				}
-				par.ParameterName = pi.Key;
-				cmd.Parameters.Add(par);
-			}
-		}
-
-		private static IDictionary<string, object> ToDictionary(object o)
-		{
-			return o as IDictionary<string, object> ?? TypeDescriptor.GetProperties(o).Cast<PropertyDescriptor>().ToDictionary(p => p.Name, p => p.GetValue(o));
 		}
 
 		public void Dispose()
