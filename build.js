@@ -51,14 +51,9 @@ task('test', 'build', function () {
 	dotnet.runNUnit(testDlls);
 });
 
-task('release', 'test', function () {
+task('pack', 'test', function () {
 	fs.deletePath('build');
 	fs.createDirectory('build');
 
 	sys.run('tools/nuget/nuget.exe', 'pack', 'src\\ADOUtils\\ADOUtils.csproj', '-Build', '-OutputDirectory', 'build', '-Symbols');
-	sys.run('tools/nuget/nuget.exe', 'push', 'build\\ADOUtils.' + assemblyVersion + '.nupkg');
-
-	version.build += 1;
-	fs.writeFile('version.json', JSON.stringify(version));
 });
-

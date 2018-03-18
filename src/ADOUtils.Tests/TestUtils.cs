@@ -8,14 +8,14 @@ namespace ADOUtils.Tests
 	{
 		/*
 		 * Uses SQL server LocalDB
-		 * Database file is located at: C:\Users\<user>\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\v11.0
+		 * Database file is located at: C:\Users\<user>\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\MSSQLLocalDB
 		 * see http://msdn.microsoft.com/en-us/library/hh510202.aspx
 		 * 
 		 * For VS2010 you need to install:
 		 * SQL Server 2012 express LocalDB
 		 * http://support.microsoft.com/kb/2544514
 		 */
-		private const string ConnStrTemplate = @"Server=(localdb)\v11.0;Integrated Security=true;Initial Catalog={0}";
+		private const string ConnStrTemplate = @"Server=(localdb)\MSSQLLocalDB;Integrated Security=true;Initial Catalog={0}";
 		private const string DBName = "ADOUtilsTests";
 
 		public static void CreateTestDb()
