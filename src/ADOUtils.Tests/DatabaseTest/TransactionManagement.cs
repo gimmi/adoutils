@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using NUnit.Framework;
 using SharpTestsEx;
@@ -132,7 +133,7 @@ namespace ADOUtils.Tests.DatabaseTest
 					.And.Exception.Message.Should().Be.EqualTo("Cannot commit transaction when one of the nested transaction has been rolled back");
 			}
 
-			_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
+			_target.FieldValue<DbTransaction>("_tr").Should().Be.Null();
 			_target.Scalar<int>("SELECT COUNT(*) FROM Tbl").Should().Be.EqualTo(0);
 		}
 	}

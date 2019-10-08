@@ -1,22 +1,18 @@
-﻿using System.Data;
+﻿using System.Data.Common;
 
 namespace ADOUtils
 {
 	public class Command : ICommand
 	{
-		private readonly IDbCommand _dbCommand;
 		private readonly IConnection _connection;
 
-		public Command(IDbCommand dbCommand, IConnection connection)
+		public Command(DbCommand dbCommand, IConnection connection)
 		{
-			_dbCommand = dbCommand;
+			DbCommand = dbCommand;
 			_connection = connection;
 		}
 
-		public IDbCommand DbCommand
-		{
-			get { return _dbCommand; }
-		}
+		public DbCommand DbCommand { get; }
 
 		public void Dispose()
 		{

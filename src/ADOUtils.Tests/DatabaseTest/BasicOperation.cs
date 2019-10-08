@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Linq;
@@ -91,23 +92,23 @@ INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2
 		[Test]
 		public void Should_manage_connection()
 		{
-			_target.FieldValue<IDbConnection>("_conn").Should().Be.Null();
+			_target.FieldValue<DbConnection>("_conn").Should().Be.Null();
 
 			IConnection outerConnection = _target.OpenConnection();
 
-			_target.FieldValue<IDbConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
+			_target.FieldValue<DbConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
 
 			IConnection innerConnection = _target.OpenConnection();
 
-			_target.FieldValue<IDbConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
+			_target.FieldValue<DbConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
 
 			innerConnection.Close();
 
-			_target.FieldValue<IDbConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
+			_target.FieldValue<DbConnection>("_conn").State.Should().Be.EqualTo(ConnectionState.Open);
 
 			outerConnection.Close();
 
-			_target.FieldValue<IDbConnection>("_conn").Should().Be.Null();
+			_target.FieldValue<DbConnection>("_conn").Should().Be.Null();
 		}
 
 		[Test]
@@ -115,15 +116,15 @@ INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2
 		{
 			using(_target.OpenConnection())
 			{
-				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
+				_target.FieldValue<DbTransaction>("_tr").Should().Be.Null();
 
 				ITransaction transaction = _target.BeginTransaction();
 
-				_target.FieldValue<IDbTransaction>("_tr").Should().Not.Be.Null();
+				_target.FieldValue<DbTransaction>("_tr").Should().Not.Be.Null();
 
 				transaction.Rollback();
 
-				_target.FieldValue<IDbTransaction>("_tr").Should().Be.Null();
+				_target.FieldValue<DbTransaction>("_tr").Should().Be.Null();
 			}
 		}
 
@@ -131,15 +132,15 @@ INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2
 		public void Should_open_transacion_with_connection()
 		{
 			ITransaction tran = _target.BeginTransaction();
-			_target.FieldValue<IDbConnection>("_conn").Should().Not.Be.Null();
+			_target.FieldValue<DbConnection>("_conn").Should().Not.Be.Null();
 
 			tran.Commit();
-			_target.FieldValue<IDbConnection>("_conn").Should().Be.Null();
+			_target.FieldValue<DbConnection>("_conn").Should().Be.Null();
 
 			tran = _target.BeginTransaction();
 
 			tran.Rollback();
-			_target.FieldValue<IDbConnection>("_conn").Should().Be.Null();
+			_target.FieldValue<DbConnection>("_conn").Should().Be.Null();
 		}
 
 		[Test]

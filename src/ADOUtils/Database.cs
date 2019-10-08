@@ -11,8 +11,8 @@ namespace ADOUtils
 	{
 		private readonly DbProviderFactory _factory;
 		private readonly string _connStr;
-		private IDbConnection _conn;
-		private IDbTransaction _tr;
+		private DbConnection _conn;
+		private DbTransaction _tr;
 		private bool _nestedTransactionRollback;
 
 		public Database(string connStr, DbProviderFactory factory)
@@ -27,7 +27,7 @@ namespace ADOUtils
 			{
 				return new Connection();
 			}
-			DbConnection conn = _factory.CreateConnection();
+			var conn = _factory.CreateConnection();
 			conn.ConnectionString = _connStr;
 			conn.Open();
 			_conn = conn;
@@ -38,7 +38,7 @@ namespace ADOUtils
 		{
 			if(_conn != null)
 			{
-				IDbConnection conn = _conn;
+				var conn = _conn;
 				_conn = null;
 				conn.Close();
 			}
@@ -46,7 +46,7 @@ namespace ADOUtils
 
 		public virtual ITransaction BeginTransaction()
 		{
-			IConnection connection = OpenConnection();
+			var connection = OpenConnection();
 			if (_tr != null)
 			{
 				return new Transaction(connection, delegate { }, NotifyNestedTransactionRollback);
@@ -70,7 +70,7 @@ namespace ADOUtils
 					RollbackTransaction();
 					throw new DataException("Cannot commit transaction when one of the nested transaction has been rolled back");
 				}
-				IDbTransaction tr = _tr;
+				var tr = _tr;
 				_tr = null;
 				tr.Commit();
 			}
@@ -80,7 +80,7 @@ namespace ADOUtils
 		{
 			if(_tr != null)
 			{
-				IDbTransaction tr = _tr;
+				var tr = _tr;
 				_tr = null;
 				tr.Rollback();
 			}
@@ -88,19 +88,17 @@ namespace ADOUtils
 
 		public virtual T Scalar<T>(string sql, object parameters = null, int? timeout = null)
 		{
-			using (var cmd = CreateCommand(timeout))
-			{
-				cmd.DbCommand.CommandText = sql;
-				AddParameters(cmd.DbCommand, ToDictionary(parameters));
-				object res = cmd.DbCommand.ExecuteScalar();
-				return DbFieldConversionUtils.Convert<T>(res);
-			}
+			using var cmd = CreateCommand(timeout);
+			cmd.DbCommand.CommandText = sql;
+			AddParameters(cmd.DbCommand, ToDictionary(parameters));
+			var res = cmd.DbCommand.ExecuteScalar();
+			return DbFieldConversionUtils.Convert<T>(res);
 		}
 
 		public virtual ICommand CreateCommand(int? timeout = null)
 		{
-			IConnection conn = OpenConnection();
-			IDbCommand cmd = _conn.CreateCommand();
+			var conn = OpenConnection();
+			var cmd = _conn.CreateCommand();
 			cmd.Transaction = _tr;
 			if (timeout.HasValue)
 			{
@@ -111,45 +109,39 @@ namespace ADOUtils
 
 		public virtual IEnumerable<IDataRecord> Query(string sql, object parameters = null, int? timeout = null)
 		{
-			using(var cmd = CreateCommand(timeout))
+			using var cmd = CreateCommand(timeout);
+			cmd.DbCommand.CommandText = sql;
+			AddParameters(cmd.DbCommand, ToDictionary(parameters));
+			using var rdr = cmd.DbCommand.ExecuteReader();
+			while(rdr.Read())
 			{
-				cmd.DbCommand.CommandText = sql;
-				AddParameters(cmd.DbCommand, ToDictionary(parameters));
-				using (IDataReader rdr = cmd.DbCommand.ExecuteReader())
-				{
-					while(rdr.Read())
-					{
-						yield return rdr;
-					}
-				}
+				yield return rdr;
 			}
 		}
 
 		public virtual int Exec(string sql, object parameters = null, int? timeout = null)
 		{
-			using (ICommand cmd = CreateCommand(timeout))
-			{
-				cmd.DbCommand.CommandText = sql;
-				AddParameters(cmd.DbCommand, ToDictionary(parameters));
-				return cmd.DbCommand.ExecuteNonQuery();
-			}
+			using var cmd = CreateCommand(timeout);
+			cmd.DbCommand.CommandText = sql;
+			AddParameters(cmd.DbCommand, ToDictionary(parameters));
+			return cmd.DbCommand.ExecuteNonQuery();
 		}
 
-		private static void AddParameters(IDbCommand cmd, IEnumerable<KeyValuePair<string, object>> parameters)
+		private static void AddParameters(DbCommand cmd, IEnumerable<KeyValuePair<string, object>> parameters)
 		{
-			foreach(var pi in parameters)
+			foreach(var (key, value) in parameters)
 			{
 				IDataParameter par;
-				if (pi.Value is IDataParameter)
+				if (value is IDataParameter parameter)
 				{
-					par = pi.Value as IDataParameter;
+					par = parameter;
 				}
 				else
 				{
 					par = cmd.CreateParameter();
-					par.Value = pi.Value ?? DBNull.Value;
+					par.Value = value ?? DBNull.Value;
 				}
-				par.ParameterName = pi.Key;
+				par.ParameterName = key;
 				cmd.Parameters.Add(par);
 			}
 		}
