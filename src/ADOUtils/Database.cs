@@ -15,8 +15,6 @@ namespace ADOUtils
 		private IDbTransaction _tr;
 		private bool _nestedTransactionRollback;
 
-		public Database(string connStr) : this(connStr, DbProviderFactories.GetFactory("System.Data.SqlClient")) {}
-
 		public Database(string connStr, DbProviderFactory factory)
 		{
 			_factory = factory;

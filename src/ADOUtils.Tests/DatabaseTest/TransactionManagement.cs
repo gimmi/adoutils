@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.SqlClient;
 using NUnit.Framework;
 using SharpTestsEx;
 
@@ -15,7 +16,7 @@ namespace ADOUtils.Tests.DatabaseTest
 			TestUtils.CreateTestDb();
 			TestUtils.Execute(@"CREATE TABLE Tbl(IntValue int NULL)");
 
-			_target = new Database(TestUtils.ConnStr);
+			_target = new Database(TestUtils.ConnStr, SqlClientFactory.Instance);
 		}
 
 		[TearDown]
@@ -53,7 +54,7 @@ namespace ADOUtils.Tests.DatabaseTest
 			using(var outer = _target.BeginTransaction())
 			{
 				_target.Exec("INSERT INTO Tbl(IntValue) VALUES(1)");
-	
+
 				using (var inner = _target.BeginTransaction())
 				{
 					_target.Exec("INSERT INTO Tbl(IntValue) VALUES(2)");

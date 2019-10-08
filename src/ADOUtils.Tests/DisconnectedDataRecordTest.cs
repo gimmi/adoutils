@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.SqlClient;
 using NUnit.Framework;
 using System.Linq;
 using SharpTestsEx;
@@ -13,7 +14,7 @@ namespace ADOUtils.Tests
 		public void SetUp()
 		{
 			TestUtils.CreateTestDb();
-			var db = new Database(TestUtils.ConnStr);
+			var db = new Database(TestUtils.ConnStr, SqlClientFactory.Instance);
 			using (db.OpenConnection())
 			{
 				_target = db.Query("SELECT 1 AS Id, 'row 1' AS Name, 'row 1 2' AS Name").AsDisconnected().First();

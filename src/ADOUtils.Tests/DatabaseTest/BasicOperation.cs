@@ -25,7 +25,7 @@ INSERT Tbl(IntValue, StringValue, DateValue, GuidValue) VALUES(2, 'string 2', '2
 			TestUtils.CreateTestDb();
 			TestUtils.Execute(TblScript);
 
-			_target = new Database(TestUtils.ConnStr);
+			_target = new Database(TestUtils.ConnStr, SqlClientFactory.Instance);
 		}
 
 		[Test]
