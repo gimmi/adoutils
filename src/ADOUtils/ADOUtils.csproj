@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Authors>Gian Marco Gherardi</Authors>
+    <Company>Gian Marco Gherardi</Company>
+    <Description>ADO.NET utilities</Description>
+    <Copyright>Gian Marco Gherardi</Copyright>
+    <PackageLicenseUrl>https://github.com/gimmi/adoutils/raw/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/gimmi/adoutils</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/gimmi/adoutils/raw/master/icon.png</PackageIconUrl>
+    <PackageTags>ado adonet ado.net db database sql sqlserver data util utils</PackageTags>
   </PropertyGroup>
-
 </Project>

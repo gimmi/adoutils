@@ -10,3 +10,11 @@ docker run -d --rm `
    -p 1433:1433 `
    mcr.microsoft.com/mssql/server:2017-latest
 ```
+
+### Build
+
+```
+dotnet pack `
+    --configuration Release `
+    .\src\ADOUtils\ADOUtils.csproj
+```
